@@ -7,4 +7,6 @@
 struct s_tinfo
 {
     pthread_mutex_t mutex;
+    int p_id;
+    
 };

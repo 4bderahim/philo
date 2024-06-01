@@ -11,7 +11,8 @@ void *thread(void* arg)
 
     i = 0;
     pthread_mutex_lock(&mutexx->mutex);
-    while (i < 100000000)
+    printf("[+] thread %d is counting\n", mutexx->p_id);
+    while (i < 1000000000)
     {
         i++;
         x++;
@@ -21,19 +22,31 @@ void *thread(void* arg)
 }
 int main()
 {
-    pthread_t threads;
-    pthread_t threads1;
+    pthread_t threads[5];
     pthread_mutex_t mutexx;
     struct s_tinfo thread_struct;
     thread_struct.mutex = mutexx;
-    pthread_mutex_init(&thread_struct.mutex, NULL);
-
-    pthread_create(&threads, NULL, thread, &thread_struct);
-    pthread_create(&threads1, NULL, thread, &thread_struct);
-    pthread_join(threads, NULL);
-    pthread_join(threads1, NULL);
+    int i;
+    i = 0;
+    while (i < 5)
+    {
+        pthread_create(&threads[i], NULL, thread, &thread_struct);
+        printf("[!] thread %d is alive\n", i);
+        thread_struct.p_id = i;
+        pthread_join(threads[i], NULL);
+        i++;
+    }
     
-    printf(">>%ld\n", x);
-    pthread_mutex_destroy(&mutexx);
+    
+    // thread_struct.mutex = mutexx;
+    // pthread_mutex_init(&thread_struct.mutex, NULL);
+
+    // pthread_create(&threads, NULL, thread, &thread_struct);
+    // pthread_create(&threads1, NULL, thread, &thread_struct);
+    // pthread_join(threads, NULL);
+    // pthread_join(threads1, NULL);
+    
+    // printf(">>%ld\n", x);
+    // pthread_mutex_destroy(&mutexx);
     return (0);
 }
