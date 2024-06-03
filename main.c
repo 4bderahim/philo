@@ -41,8 +41,8 @@ void philo_creat()
         }
     while (i < philo->number_of_philosophers)
     {
-        pthread_mutex_init(philo->fork, NULL);
-        //philo.
+        pthread_mutex_init(philo[i].fork, NULL);
+        philo[i].philo_id = i;
         i++;
     }
     

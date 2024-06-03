@@ -13,6 +13,7 @@ struct s_tinfo
 typedef struct s_philo
 {
     pthread_t thread;
+    int philo_id;
     int number_of_philosophers;
     int time_to_die;
     int time_to_eat;
