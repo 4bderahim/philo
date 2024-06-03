@@ -20,69 +20,70 @@ void *thread(void* arg)
    
     return (0);
 }
-void get()
+
+void philo_creat()
 {
-    t_test *hello;
+    t_philo *philo;
     int i;
+    
     i = 0;
-    hello = (t_test *)malloc(sizeof(t_test *) * 5);
-    while (i < 5)
+    philo = (t_philo *) malloc(sizeof(philo->number_of_philosophers));
+    if (!philo)
+        {
+            printf("[-] error in malloc\n");
+            exit(1);
+        }
+    philo->fork = (pthread_mutex_t *) malloc(sizeof(philo->number_of_philosophers));
+    if (!philo->fork)
+        {
+            printf("[-] error in malloc\n");
+            exit(1);
+        }
+    while (i < philo->number_of_philosophers)
     {
-        (hello+i)->x = i *2;
-        (hello+i)->filo_num = i*i;
+        pthread_mutex_init(philo->fork, NULL);
+        //philo.
         i++;
     }
-    i = 0;
-    while (i < 5)
-    {
-        printf("\t%d|%d\n",        (hello+i)->x, (hello+i)->filo_num );
-        i++;
-    }
+    
 }
+
 int main()
 {
+    pthread_t threads[5];
+    pthread_mutex_t mutexx;
+    struct s_tinfo thread_struct;
+    thread_struct.mutex = mutexx;
+    pthread_mutex_init(&thread_struct.mutex, NULL);
+    
     int i;
     i = 0;
-    get();
-    system("leaks -q a.out");
-}
-
-// int main()
-// {
-//     pthread_t threads[5];
-//     pthread_mutex_t mutexx;
-//     struct s_tinfo thread_struct;
-//     thread_struct.mutex = mutexx;
-//     pthread_mutex_init(&thread_struct.mutex, NULL);
-    
-//     int i;
-//     i = 0;
-//     while (i < 5)
-//     {
-//         pthread_create(&threads[i], NULL, thread, &thread_struct);
-//         printf("[!] thread %d is alive\n", i);
-//         thread_struct.p_id = i;
+    while (i < 5)
+    {
+        pthread_create(&threads[i], NULL, thread, &thread_struct);
+        printf("[!] thread %d is alive\n", i);
+        thread_struct.p_id = i;
          
-//         i++;
-//     }
-//     i = 0;
-//     while (i < 5)
-//     {
-//         //thread_struct.p_id = i;
-//         pthread_join(threads[i], NULL);
-//          printf("[+] thread %d is done\n", i);
-//         i++;
-//     }
+        i++;
+    }
+    i = 0;
+    while (i < 5)
+    {
+        //thread_struct.p_id = i;
+        pthread_join(threads[i], NULL);
+         printf("[+] thread %d is done\n", i);
+        i++;
+    }
     
-//     // thread_struct.mutex = mutexx;
+    // thread_struct.mutex = mutexx;
     
 
-//     // pthread_create(&threads, NULL, thread, &thread_struct);
-//     // pthread_create(&threads1, NULL, thread, &thread_struct);
-//     // pthread_join(threads, NULL);
-//     // pthread_join(threads1, NULL);
+    // pthread_create(&threads, NULL, thread, &thread_struct);
+    // pthread_create(&threads1, NULL, thread, &thread_struct);
+    // pthread_join(threads, NULL);
+    // pthread_join(threads1, NULL);
     
-//      printf(">>%ld\n", x);
-//     // pthread_mutex_destroy(&mutexx);
-//     return (0);
-// }
+     printf(">>%ld\n", x);
+    // pthread_mutex_destroy(&mutexx);
+    return (0);
+}
