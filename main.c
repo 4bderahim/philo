@@ -23,7 +23,7 @@ void *thread(void* arg)
 
 void philo_creat()
 {
-    t_philo *philo;
+    t_data *philo;
     int i;
     
     i = 0;
