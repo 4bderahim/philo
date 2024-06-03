@@ -25,16 +25,24 @@ void philo_creat()
 {
     t_data *philo;
     int i;
-    
+
     i = 0;
-    data = (t_philo *) malloc(sizeof(philo->number_of_philosophers));
+    philo = (t_data *) malloc(sizeof(t_data));
+    if (!philo)
+       return ;
+    philo->number_of_philosophers = 5;
+    if (philo == NULL)
+        printf("[_] #&&#\n\n\n");
+    printf("[_] seg is %zu|%d Below \n\n\n\n", sizeof(t_philosopher ), philo->number_of_philosophers);
+    philo->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*philo->number_of_philosophers);
     
     if (!philo)
         {
             printf("[-] error in malloc\n");
             exit(1);
         }
-    philo->forks = (t_fork *) malloc(sizeof(t_fork *) * philo->number_of_philosophers);
+    
+    philo->forks = (t_fork *) malloc(sizeof(t_fork ) * philo->number_of_philosophers);
     if (!philo->forks)
         {
             printf("[-] error in malloc\n");
@@ -47,18 +55,19 @@ void philo_creat()
         philo->forks[i].fork_id = i+1;
         i++;
     }
+    i = 0;
     while (i < 5)
     {
-        pthread_create(&philo[i].thread, NULL, thread, philo);
-        printf("[!] thread %d is alive\n", i);
-        philo[i].philo_id = i+1;    
+        pthread_create(&philo->philosophers[i].thread, NULL, thread, philo);
+        printf("\t[!] thread %d is alive\n", i+1);
+        philo->philosophers[i].philo_id = i+1;    
         i++;
     }
     i = 0;
     i = 0;
     while (i < philo->number_of_philosophers)
     {   
-        printf("\tphilo:%p\nphilo id:%d\n",&philo->thread, philo->philo_id);
+        printf("\tphilo:%p   id:%d\n",&philo->philosophers[i].thread, philo->philosophers[i].philo_id);
         i++;
     }   
 }

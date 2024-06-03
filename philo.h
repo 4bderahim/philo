@@ -12,12 +12,13 @@ typedef struct s_fork
 typedef struct s_philosopher
 {
     pthread_t thread;
-    int philo_id;
-    int number_of_philosophers;
-    int time_to_die;
-    int time_to_eat;
-    int time_to_sleep;
-    int number_of_times_each_philosopher_must_eat;
+
+     int philo_id;
+    // int number_of_philosophers;
+    // int time_to_die;
+    // int time_to_eat;
+    // int time_to_sleep;
+    // int number_of_times_each_philosopher_must_eat;
     t_fork  *forks;
 } t_philosopher;
 typedef struct s_data
