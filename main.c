@@ -20,6 +20,23 @@ void *thread(void* arg)
    
     return (0);
 }
+
+void creat_threads(t_data *struct_data)
+{
+    t_data *data;
+    int i;
+    i = 0;
+    data = struct_data;
+
+    while (i < data->number_of_philosophers)
+    {
+        data->philosophers->philo_id = i+1;
+        data->philosophers->meals_count = 0;
+        data->philosophers->full = 0;
+        i++;
+    }
+
+}
 void mutex_calls(pthread_mutex_t *mutex, char order)
 {
     if (order == 'i')
@@ -42,8 +59,6 @@ void philo_creat()
     if (!philo)
        return ;
     philo->number_of_philosophers = 5;
-    if (philo == NULL)
-        printf("[_] #&&#\n\n\n");
     printf("[_] seg is %zu|%d Below \n\n\n\n", sizeof(t_philosopher ), philo->number_of_philosophers);
     philo->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*philo->number_of_philosophers);
     
