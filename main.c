@@ -20,8 +20,8 @@ void *thread(void* arg)
    
     return (0);
 }
-
-void creat_threads(t_data *struct_data)
+ 
+void set_forks_to_philos(t_data *struct_data, t_fork *fork, int positin)
 {
     t_data *data;
     int i;
@@ -33,9 +33,10 @@ void creat_threads(t_data *struct_data)
         data->philosophers->philo_id = i+1;
         data->philosophers->meals_count = 0;
         data->philosophers->full = 0;
+        data->philosophers->left_fork = data->philosophers->forks[i];
+
         i++;
     }
-
 }
 void mutex_calls(pthread_mutex_t *mutex, char order)
 {
@@ -78,7 +79,7 @@ void philo_creat()
     while (i < philo->number_of_philosophers)
     {
         mutex_calls(&philo->forks[i].fork, 'i');
-        philo->forks[i].fork_id = i+1;
+        philo->forks[i].fork_id = i;
         i++;
     }
     i = 0;
