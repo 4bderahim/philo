@@ -1,5 +1,5 @@
 #include "philo.h"
-
+// kaaablaajjj
 
 long int x = 0;
 void *thread(void* arg)
@@ -20,8 +20,16 @@ void *thread(void* arg)
    
     return (0);
 }
- 
-void set_forks_to_philos(t_data *struct_data, t_fork *fork, int positin)
+void set_forks_to_philos(t_data *data, int position)
+{
+    if (data->philosophers->philo_id % 2)
+    {
+        data->philosophers->left_fork = data->philosophers[position - 1].forks ;
+        data->philosophers->right_fork = data->philosophers[position].forks;
+    }
+
+}
+void set_philos(t_data *struct_data, t_fork *fork)
 {
     t_data *data;
     int i;
@@ -33,7 +41,7 @@ void set_forks_to_philos(t_data *struct_data, t_fork *fork, int positin)
         data->philosophers->philo_id = i+1;
         data->philosophers->meals_count = 0;
         data->philosophers->full = 0;
-        //data->philosophers->left_fork = data->philosophers->forks[i];
+        set_forks_to_philos(data, i);
         i++;
     }
 }
