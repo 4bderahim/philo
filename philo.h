@@ -12,7 +12,7 @@ typedef struct s_fork
 typedef struct s_philosopher
 {
     pthread_t thread;
-
+    
     int philo_id;
     int full;
     int meals_count;

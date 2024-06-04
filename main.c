@@ -33,11 +33,11 @@ void set_forks_to_philos(t_data *struct_data, t_fork *fork, int positin)
         data->philosophers->philo_id = i+1;
         data->philosophers->meals_count = 0;
         data->philosophers->full = 0;
-        data->philosophers->left_fork = data->philosophers->forks[i];
-
+        //data->philosophers->left_fork = data->philosophers->forks[i];
         i++;
     }
 }
+
 void mutex_calls(pthread_mutex_t *mutex, char order)
 {
     if (order == 'i')
@@ -102,7 +102,7 @@ void philo_creat()
     i = 0;
     while (i < philo->number_of_philosophers)
     {   
-        printf("\tphilo:%ld   id:%d\n",(long )(&philo->philosophers[i].thread), philo->philosophers[i].philo_id);
+        printf("\tphilo:%ld\tid:%d\tmeals count:%d \n",(long )(&philo->philosophers[i].thread), philo->philosophers[i].philo_id, philo->philosophers[i].meals_count);
         i++;
     }   
 }
