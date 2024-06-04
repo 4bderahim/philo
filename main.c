@@ -20,6 +20,17 @@ void *thread(void* arg)
    
     return (0);
 }
+void mutex_calls(pthread_mutex_t *mutex, char order)
+{
+    if (order == 'i')
+        pthread_mutex_init(mutex ,NULL);
+    else if (order == 'l')
+        pthread_mutex_lock(mutex);
+    else if (order == 'u')
+        pthread_mutex_unlock(mutex);
+    else if (order == 'd')
+        pthread_mutex_destroy(mutex);
+}
 
 void philo_creat()
 {
@@ -51,7 +62,7 @@ void philo_creat()
      i = 0;
     while (i < philo->number_of_philosophers)
     {
-        pthread_mutex_init(&philo->forks[i].fork, NULL);
+        mutex_calls(&philo->forks[i].fork, 'i');
         philo->forks[i].fork_id = i+1;
         i++;
     }
@@ -64,14 +75,26 @@ void philo_creat()
         i++;
     }
     i = 0;
+    while (i < philo->number_of_philosophers)
+    {   
+        printf("\tjoining philo:%p   id:%d \n",&philo->philosophers[i].thread, philo->philosophers[i].philo_id);
+       
+        pthread_join(philo->philosophers[i].thread, NULL);
+        
+        i++;
+    } 
     i = 0;
     while (i < philo->number_of_philosophers)
     {   
-        printf("\tphilo:%p   id:%d\n",&philo->philosophers[i].thread, philo->philosophers[i].philo_id);
+        printf("\tphilo:%ld   id:%d\n",(long )(&philo->philosophers[i].thread), philo->philosophers[i].philo_id);
         i++;
     }   
 }
-
+int dd()
+{
+    system("leaks -q a.out");
+    return (0);
+}
 int main()
 {
     // pthread_t threads[5];
@@ -79,7 +102,7 @@ int main()
     // struct s_tinfo thread_struct;
     // thread_struct.mutex = mutexx;
     // pthread_mutex_init(&thread_struct.mutex, NULL);
-    
+    //atexit(dd());
     philo_creat();
     // i = 0;
     // while (i < 5)
