@@ -4,13 +4,11 @@
 long int x = 0;
 void *thread(void* arg)
 {
-    
     long int i;
     //t_philo * mutexx;
-   // mutexx = (struct s_tinfo *)arg;
-
+    // mutexx = (struct s_tinfo *)arg;
     i = 0;
-   // pthread_mutex_lock(&mutexx->mutex);
+    // pthread_mutex_lock(&mutexx->mutex);
     while (i < 100000000)
     {
         i++;
@@ -22,19 +20,28 @@ void *thread(void* arg)
 }
 void set_forks_to_philos(t_data *data, int position)
 {
+
+    data->philosophers->left_fork = &data->philosophers[position].forks[position];
+    data->philosophers->right_fork = &data->philosophers[position].forks[(position+1) % data->number_of_philosophers];
     if (data->philosophers->philo_id % 2)
     {
-        data->philosophers->left_fork = data->philosophers[position - 1].forks ;
-        data->philosophers->right_fork = data->philosophers[position % data->number_of_philosophers].forks;
+        data->philosophers->right_fork = &data->philosophers[position].forks[position];
+        data->philosophers->left_fork = &data->philosophers[position].forks[(position+1) % data->number_of_philosophers];
     }
     int i = 0;
     while (i < data->number_of_philosophers)
     {
-        printf("|philo id :%d\t\this left fork  :%p\n",data->philosophers[i].philo_id, &data->philosophers->left_fork);
-        printf("|philo id :%d\t\this right fork :%p\n",data->philosophers[i].philo_id, &data->philosophers->right_fork);
+        printf("|philo id :%d\t\this left fork  :%p\n",data->philosophers[i].philo_id, &data->philosophers[i].left_fork);
+        printf("|philo id :%d\t\this right fork :%p\n",data->philosophers[i].philo_id, &data->philosophers[i].right_fork);
         i++;
     }
 }
+//           1   (2)   2
+//      (1)              (3)
+//    0      {##}              
+//  (5)             3
+//   4     (4) 
+
 void set_philos(t_data *struct_data, t_fork *fork)
 {
     t_data *data;
@@ -47,7 +54,7 @@ void set_philos(t_data *struct_data, t_fork *fork)
         data->philosophers->philo_id = i+1;
         data->philosophers->meals_count = 0;
         data->philosophers->full = 0;
-        set_forks_to_philos(data, i);
+        set_forks_to_philos(data,i);
         i++;
     }
 }
@@ -80,7 +87,6 @@ void philo_creat()
             printf("[-] error in malloc\n");
             exit(1);
         }
-    
     philo->forks = (t_fork *) malloc(sizeof(t_fork ) * philo->number_of_philosophers);
     if (!philo->forks)
         {
