@@ -25,9 +25,15 @@ void set_forks_to_philos(t_data *data, int position)
     if (data->philosophers->philo_id % 2)
     {
         data->philosophers->left_fork = data->philosophers[position - 1].forks ;
-        data->philosophers->right_fork = data->philosophers[position].forks;
+        data->philosophers->right_fork = data->philosophers[position % data->number_of_philosophers].forks;
     }
-
+    int i = 0;
+    while (i < data->number_of_philosophers)
+    {
+        printf("|philo id :%d\t\this left fork  :%p\n",data->philosophers[i].philo_id, &data->philosophers->left_fork);
+        printf("|philo id :%d\t\this right fork :%p\n",data->philosophers[i].philo_id, &data->philosophers->right_fork);
+        i++;
+    }
 }
 void set_philos(t_data *struct_data, t_fork *fork)
 {
@@ -45,7 +51,6 @@ void set_philos(t_data *struct_data, t_fork *fork)
         i++;
     }
 }
-
 void mutex_calls(pthread_mutex_t *mutex, char order)
 {
     if (order == 'i')
@@ -68,7 +73,6 @@ void philo_creat()
     if (!philo)
        return ;
     philo->number_of_philosophers = 5;
-    printf("[_] seg is %zu|%d Below \n\n\n\n", sizeof(t_philosopher ), philo->number_of_philosophers);
     philo->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*philo->number_of_philosophers);
     
     if (!philo)
@@ -99,12 +103,11 @@ void philo_creat()
         i++;
     }
     i = 0;
+    set_philos(philo, philo->forks);
     while (i < philo->number_of_philosophers)
     {   
         printf("\tjoining philo:%p   id:%d \n",&philo->philosophers[i].thread, philo->philosophers[i].philo_id);
-       
         pthread_join(philo->philosophers[i].thread, NULL);
-        
         i++;
     } 
     i = 0;
@@ -119,6 +122,7 @@ int dd()
     system("leaks -q a.out");
     return (0);
 }
+
 int main()
 {
     // pthread_t threads[5];
@@ -128,6 +132,7 @@ int main()
     // pthread_mutex_init(&thread_struct.mutex, NULL);
     //atexit(dd());
     philo_creat();
+    
     // i = 0;
     // while (i < 5)
     // {
