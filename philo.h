@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <stdlib.h>
+
 typedef struct s_fork
 {
     pthread_mutex_t fork;
@@ -19,6 +20,7 @@ typedef struct s_philosopher
     t_fork *left_fork;
     t_fork *right_fork;
     t_fork  *forks;
+   // t_data *data;
 } t_philosopher;
 typedef struct s_data
 {
