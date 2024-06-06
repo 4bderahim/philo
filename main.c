@@ -1,26 +1,22 @@
 #include "philo.h"
-// kaaablaajjj
-//           1   (2)   2
-//      (1)              (3)
-//    90      {##}              
-//  (5)             3
-//   4     (4) 
 
 long int x = 0;
 void *thread(void* arg);
 
 void set_forks_to_philos(t_data *data, int position)
 {
-    data->philosophers[position].left_fork = &data->forks[position];
-    data->philosophers[position].right_fork = &data->forks[(position+1) % data->number_of_philosophers];
-    if (data->philosophers[position].philo_id % 2)
-    {
-        data->philosophers[position].right_fork = &data->forks[position];
-        data->philosophers[position].left_fork = &data->forks[(position+1) % data->number_of_philosophers];
-    }
+    
+    // if ((data->philosophers[position].philo_id % 2) == 0)
+    // {
+    //     data->philosophers[position].left_fork = &data->forks[position];
+    //     data->philosophers[position].right_fork = &data->forks[(position+1) % data->number_of_philosophers];
+    //     return ;
+    // }
+    data->philosophers[position].right_fork = &data->forks[position];
+    data->philosophers[position].left_fork = &data->forks[(position+1) % data->number_of_philosophers];
+    
 }
-//
-//
+
 void set_philos(t_data *data, t_fork *fork)
 {
     int i;
@@ -69,7 +65,8 @@ void philo_creat()
             printf("[-]a error in malloc\n");
             exit(1);
         }
-   // data->philosophers->data = data;
+    
+    data->philosophers->data = data;
     i = 0;
     while (i < data->number_of_philosophers)
     {
@@ -88,6 +85,7 @@ void philo_creat()
     i = 0;
     set_philos(data, data->forks);
     i = 0;
+    
     while (i < data->number_of_philosophers)
     {
         printf("|philo id :%d\t\this left fork  :%d\n", data->philosophers[i].philo_id, data->philosophers[i].left_fork->fork_id);
@@ -95,10 +93,9 @@ void philo_creat()
         i++;
     }
     i= 0 ;
-        
     while (i < data->number_of_philosophers)
     { 
-        pthread_mutex_init(&data->philosophers[i].forks[i].fork, NULL);
+        pthread_mutex_init(&data->forks[i].fork, NULL);
         pthread_join(data->philosophers[i].thread, NULL);
     //    / pthread_mutex_init(&data->philosophers[i].forks[i].fork);
         i++;
