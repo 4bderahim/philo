@@ -36,5 +36,6 @@ typedef struct s_data
     int end_party;
     int number_of_times_each_philosopher_must_eat;
     t_philosopher *philosophers;
+    int i;
     t_fork  *forks;
 } t_data;
