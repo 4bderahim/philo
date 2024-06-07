@@ -23,6 +23,7 @@ typedef struct s_philosopher
     t_fork *right_fork;
     t_fork  *forks;
     t_data *data;
+    int *index;
 } t_philosopher;
 typedef struct s_data
 {

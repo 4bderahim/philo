@@ -5,16 +5,8 @@ void *thread(void* arg);
 
 void set_forks_to_philos(t_data *data, int position)
 {
-    
-    // if ((data->philosophers[position].philo_id % 2) == 0)
-    // {
-    //     data->philosophers[position].left_fork = &data->forks[position];
-    //     data->philosophers[position].right_fork = &data->forks[(position+1) % data->number_of_philosophers];
-    //     return ;
-    // }
     data->philosophers[position].right_fork = &data->forks[position];
     data->philosophers[position].left_fork = &data->forks[(position+1) % data->number_of_philosophers];
-    
 }
 
 void set_philos(t_data *data, t_fork *fork)
@@ -26,7 +18,7 @@ void set_philos(t_data *data, t_fork *fork)
         data->philosophers[i].philo_id = i+1;
         data->philosophers[i].meals_count = 0;
         data->philosophers[i].full = 0;
-        set_forks_to_philos(data,i);
+        set_forks_to_philos(data, i);
         i++;
     }
 }
@@ -41,19 +33,20 @@ void mutex_calls(pthread_mutex_t *mutex, char order)
     else if (order == 'd')
         pthread_mutex_destroy(mutex);
 }
-
+void d()
+{
+    system("leaks -q a.out");
+}
 void philo_creat()
 {
     t_data *data;
     int i;
-
     i = 0;
     data = (t_data *) malloc(sizeof(t_data));
     if (!data)
        return ;
     data->number_of_philosophers = 4;
     data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
-    
     if (!data->philosophers)
         {
             printf("[-] error in malloc\n");
@@ -73,52 +66,64 @@ void philo_creat()
         mutex_calls(&data->forks[i].fork, 'i');
         data->forks[i].fork_id = i;
         i++;
+        printf("#\n");
+    }
+  
+    set_philos(data, data->forks);
+    i = 0;
+    while (i < 4)
+    {
+        pthread_mutex_init(&data->forks[i].fork, NULL);
+        data->philosophers[i].index = &i;
+        //mutex_calls(&data->forks[i].fork, 'i');
+        pthread_create(&data->philosophers[i].thread, NULL, thread, &data->forks[i]);
+        i++;
+        printf("#\n");
     }
     i = 0;
     while (i < 4)
     {
-        pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
-        printf("\t[!] thread %d is alive\n", i+1);
-        data->philosophers[i].philo_id = i+1;
-        i++;
-    }
-    i = 0;
-    set_philos(data, data->forks);
-    i = 0;
-    
-    while (i < data->number_of_philosophers)
-    {
-        printf("|philo id :%d\t\this left fork  :%d\n", data->philosophers[i].philo_id, data->philosophers[i].left_fork->fork_id);
-        printf("|philo id :%d\t\this right fork :%d\n\n", data->philosophers[i].philo_id,  data->philosophers[i].right_fork->fork_id);
-        i++;
-    }
-    i= 0 ;
-    while (i < data->number_of_philosophers)
-    { 
-        pthread_mutex_init(&data->forks[i].fork, NULL);
         pthread_join(data->philosophers[i].thread, NULL);
-    //    / pthread_mutex_init(&data->philosophers[i].forks[i].fork);
+        //pthread_mutex_destroy(&data->forks[i].fork);
         i++;
-    }   
+        
+    }
 }
+
 void *thread(void* arg)
 {
-//     t_philosopher *ph;
-//     int i;
-//     ph = (t_philosopher *)arg;
-//     i = 0;
-//     pthread_mutex_lock(&ph->forks[ph->philo_id-1].fork);
+
+    t_fork *ph;
+    long int i;
+    ph = (t_fork *)arg;
     
-//     printf("philo : %d is eating \n", ph->philo_id);
-//     while (i < 100000000)
-//     {
-//         i++;
-//         x++;
-//     }
-//    pthread_mutex_unlock(&ph->forks[ph->philo_id-1].fork);    
-//    pthread_mutex_init(&ph->forks[ph->philo_id-1].fork, NULL);
+    i  = 0;
+    pthread_mutex_lock(&ph->fork);
+   while (i < 100000000)
+   {
+    
+    x++;
+    
+    i++;
+    
+   }
+   printf("fork %d <--\n", ph->fork_id);
+   
+   
    return (0);
 }
+
+
+
+
+//  i = 0;
+    
+//     while (i < data->number_of_philosophers)
+//     {
+//         printf("|philo id :%d\t\this left fork  :%d\n", data->philosophers[i].philo_id, data->philosophers[i].left_fork->fork_id);
+//         printf("|philo id :%d\t\this right fork :%d\n\n", data->philosophers[i].philo_id,  data->philosophers[i].right_fork->fork_id);
+//         i++;
+//     }
 
 int main()
 {
@@ -128,8 +133,9 @@ int main()
     // thread_struct.mutex = mutexx;
     // pthread_mutex_init(&thread_struct.mutex, NULL);
     //atexit(dd());
-    philo_creat();
     
+    philo_creat();
+    printf("threads are Done : %ld\n",x);
     // i = 0;
     // while (i < 5)
     // {
