@@ -45,7 +45,7 @@ void philo_creat()
     data = (t_data *) malloc(sizeof(t_data));
     if (!data)
        return ;
-    data->number_of_philosophers = 4;
+    data->number_of_philosophers = 5;
     data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
     if (!data->philosophers)
         {
@@ -66,31 +66,33 @@ void philo_creat()
         mutex_calls(&data->forks[i].fork, 'i');
         data->forks[i].fork_id = i;
         i++;
-        printf("#\n");
+        printf("#|\n");
     }
   
     set_philos(data, data->forks);
     i = 0;
-    while (i < 4)
+    while (i < 5)
     {
         pthread_mutex_init(&data->forks[i].fork, NULL);
         data->philosophers[i].index = &i;
         
+        
+
         pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
         
         i++;
-        printf("#\n");
+        printf("[#\n");
     }
     i = 0;
     data->i = 0;
-    while (i < 4)
+    while (i < 5)
     {
         
-        pthread_mutex_init(&data->philosophers[i].left_fork->fork, NULL);
-        pthread_mutex_init(&data->philosophers[i].right_fork->fork, NULL);
+        pthread_mutex_init(&(data->philosophers[i].left_fork->fork), NULL);
+        pthread_mutex_init(&(data->philosophers[i].right_fork->fork), NULL);
         pthread_join(data->philosophers[i].thread, NULL);
-        
-        pthread_mutex_unlock(&data->forks[0].fork);
+        usleep(1);
+       // pthread_mutex_unlock(&data->forks[0].fork);
 //        pthread_mutex_destroy(&data->forks[0].fork);
         printf("\t||%d\n", i);
         i++;
@@ -102,26 +104,30 @@ void *thread(void* arg)
 
     t_philosopher *ph;
     long int i;
-    
+
+
     ph = (t_philosopher *)arg;
-    pthread_mutex_lock(&ph->left_fork->fork);
+   pthread_mutex_lock(&(ph->left_fork->fork));
     printf("philo %d has taken left fork nbr : %d..\n", ph->philo_id, ph->left_fork->fork_id);
-    pthread_mutex_lock(&ph->right_fork->fork);
+   pthread_mutex_lock(&(ph->right_fork->fork));
     printf("philo %d has taken right fork nbr : %d..\n", ph->philo_id, ph->right_fork->fork_id);
     i  = 0;
     printf("philo %d is eating..\n", ph->philo_id);
-   while (i < 100000)
-   {
-    //pthread_mutex_lock(&mut);
-    x++;
-    i++;
+    while (i < 100000)
+    {
+   //      pthread_mutex_lock(&ph->left_fork->fork);
+  //  pthread_mutex_lock(&ph->right_fork->fork);
+        x++;
+        i++;
+  // pthread_mutex_unlock(&ph->left_fork->fork);
+   // pthread_mutex_unlock(&ph->right_fork->fork);
     //pthread_mutex_unlock(&mut);
     }
-    pthread_mutex_unlock(&ph->left_fork->fork);
-    pthread_mutex_unlock(&ph->right_fork->fork);
+    pthread_mutex_unlock(&(ph->left_fork->fork));
+   pthread_mutex_unlock(&(ph->right_fork->fork));
 
-    pthread_mutex_destroy(&ph->left_fork->fork);
-    pthread_mutex_destroy(&ph->right_fork->fork);
+    //  pthread_mutex_destroy(&ph->left_fork->fork);
+    //  pthread_mutex_destroy(&ph->right_fork->fork);
    
    return (0);
 }
