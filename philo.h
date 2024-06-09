@@ -30,7 +30,7 @@ typedef struct s_data
     pthread_t thread;
     int number_of_philosophers;
     int time_to_die;
-    int time_to_eat;
+    int time_to_eat; //
     int time_to_sleep;
     int start_party;
     int end_party;

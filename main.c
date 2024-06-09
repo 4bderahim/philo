@@ -90,15 +90,7 @@ void philo_creat()
         pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
         i++;
     }
-     i = 0;
-    
-    // printf("[#\n\n\n\n\n\n");
-    // while (i < data->number_of_philosophers)
-    // {
-    //     printf("|philo id :%d\t\this left fork  :%d\n", data->philosophers[i].philo_id, data->philosophers[i].left_fork);
-    //     printf("|philo id :%d\t\this right fork :%d\n\n", data->philosophers[i].philo_id,  data->philosophers[i].right_fork);
-    //     i++;
-    // }
+     
     i = 0;
     data->i = 0;
     while (i < 5)
@@ -119,14 +111,19 @@ void *thread(void* arg)
     long int i;
 
     ph = (t_philosopher *) arg;
-    
     if (ph->philo_id % 2 == 0)
         {
-            usleep(1400);
+            printf("philo %d is thinking..\n", ph->philo_id);
+            usleep(100);
         }
+ 
     while (1)
     {
+        // death -> check last time eat compared to current time eat: exit 
+        
+        // checks if philo is full .. exit 
         printf("philo %d is thinking..\n", ph->philo_id);
+        
         pthread_mutex_lock(&(ph->forks[ph->left_fork].fork));
         printf("philo %d has taken left fork nbr : %d..\n", ph->philo_id, ph->left_fork );
         pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
@@ -142,8 +139,7 @@ void *thread(void* arg)
             {
                 break;
             }
-    }
-    
+    } 
    return (0);
 }
 
@@ -159,43 +155,11 @@ void *thread(void* arg)
 //         i++;
 //     }
 
-int main()
+int main(int argc, char **argv)
 {
-    // pthread_t threads[5];
-    // pthread_mutex_t mutexx;
-    // struct s_tinfo thread_struct;
-    // thread_struct.mutex = mutexx;
-    // pthread_mutex_init(&thread_struct.mutex, NULL);
-    //atexit(dd());
-    
+    if (argc != 5)
     philo_creat();
     printf("threads are Done : %ld\n",x);
-    // i = 0;
-    // while (i < 5)
-    // {
-    //     pthread_create(&threads[i], NULL, thread, &thread_struct);
-    //     printf("[!] thread %d is alive\n", i);
-    //     thread_struct.p_id = i;
-         
-    //     i++;
-    // }
-    // i = 0;
-    // while (i < 5)
-    // {
-    //     //thread_struct.p_id = i;
-    //     pthread_join(threads[i], NULL);
-    //      printf("[+] thread %d is done\n", i);
-    //     i++;
-    // }
-    // thread_struct.mutex = mutexx;
-    
-
-    // pthread_create(&threads, NULL, thread, &thread_struct);
-    // pthread_create(&threads1, NULL, thread, &thread_struct);
-    // pthread_join(threads, NULL);
-    // pthread_join(threads1, NULL);
-    
-     //printf(">>%ld\n", x);
-    // pthread_mutex_destroy(&mutexx);
+   
     return (0);
 }
