@@ -19,8 +19,8 @@ typedef struct s_philosopher
     int philo_id;
     int full;
     int meals_count;
-    t_fork *left_fork;
-    t_fork *right_fork;
+    int     left_fork;
+    int     right_fork;
     t_fork  *forks;
     t_data *data;
     int *index;

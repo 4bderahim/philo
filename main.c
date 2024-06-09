@@ -5,8 +5,8 @@ void *thread(void* arg);
 
 void set_forks_to_philos(t_data *data, int position)
 {
-    data->philosophers[position].right_fork = &data->forks[position];
-    data->philosophers[position].left_fork = &data->forks[(position+1) % data->number_of_philosophers];
+    data->philosophers[position].right_fork = position;
+    data->philosophers[position].left_fork = (position+1) % data->number_of_philosophers;
 }
 
 void set_philos(t_data *data, t_fork *fork)
@@ -18,7 +18,11 @@ void set_philos(t_data *data, t_fork *fork)
         data->philosophers[i].philo_id = i+1;
         data->philosophers[i].meals_count = 0;
         data->philosophers[i].full = 0;
-        set_forks_to_philos(data, i);
+        data->philosophers[i].right_fork = i;
+        data->philosophers[i].left_fork = (i+1) % data->number_of_philosophers;
+        data->philosophers[i].forks = data->forks;
+        data->philosophers[i].data = data;
+        //set_forks_to_philos(data, i);
         i++;
     }
 }
@@ -59,7 +63,6 @@ void philo_creat()
             exit(1);
         }
     
-    data->philosophers->data = data;
     i = 0;
     while (i < data->number_of_philosophers)
     {
@@ -68,35 +71,41 @@ void philo_creat()
         i++;
         printf("#|\n");
     }
-  
     set_philos(data, data->forks);
+    printf("[#\n\n\n\n\n\n");
+    
     i = 0;
+    
     while (i < 5)
     {
         pthread_mutex_init(&data->forks[i].fork, NULL);
-        data->philosophers[i].index = &i;
-        
-        
 
         pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
-        
         i++;
-        printf("[#\n");
+        
+    }
+     i = 0;
+    printf("[#\n\n\n\n\n\n");
+    while (i < data->number_of_philosophers)
+    {
+        printf("|philo id :%d\t\this left fork  :%d\n", data->philosophers[i].philo_id, data->philosophers[i].left_fork);
+        printf("|philo id :%d\t\this right fork :%d\n\n", data->philosophers[i].philo_id,  data->philosophers[i].right_fork);
+        i++;
     }
     i = 0;
-    data->i = 0;
-    while (i < 5)
-    {
+//     data->i = 0;
+//     while (i < 5)
+//     {
         
-        pthread_mutex_init(&(data->philosophers[i].left_fork->fork), NULL);
-        pthread_mutex_init(&(data->philosophers[i].right_fork->fork), NULL);
-        pthread_join(data->philosophers[i].thread, NULL);
-        usleep(1);
-       // pthread_mutex_unlock(&data->forks[0].fork);
-//        pthread_mutex_destroy(&data->forks[0].fork);
-        printf("\t||%d\n", i);
-        i++;
-    }
+//         pthread_mutex_init(&(data->philosophers[i].forks[data->philosophers[i].left_fork].fork), NULL);
+//         pthread_mutex_init(&(data->philosophers[i].forks[data->philosophers[i].right_fork].fork), NULL);
+//         pthread_join(data->philosophers[i].thread, NULL);
+//         usleep(1);
+//        // pthread_mutex_unlock(&data->forks[0].fork);
+// //        pthread_mutex_destroy(&data->forks[0].fork);
+//         printf("\t||%d\n", i);
+//         i++;
+//     }
 }
  pthread_mutex_t mut;
 void *thread(void* arg)
@@ -105,15 +114,17 @@ void *thread(void* arg)
     t_philosopher *ph;
     long int i;
 
-
     ph = (t_philosopher *)arg;
-   pthread_mutex_lock(&(ph->left_fork->fork));
-    printf("philo %d has taken left fork nbr : %d..\n", ph->philo_id, ph->left_fork->fork_id);
-   pthread_mutex_lock(&(ph->right_fork->fork));
-    printf("philo %d has taken right fork nbr : %d..\n", ph->philo_id, ph->right_fork->fork_id);
+    
+    
+   printf("\n\t\t----->%d\t\t\n",ph->data->forks[ph->left_fork].fork_id);
+  //pthread_mutex_lock(&(ph->forks[ph->left_fork].fork));
+    printf("philo %d has taken left fork nbr : %d..\n", ph->philo_id, ph->left_fork );
+ // pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
+    printf("philo %d has taken right fork nbr : %d..\n", ph->philo_id, ph->right_fork);
     i  = 0;
     printf("philo %d is eating..\n", ph->philo_id);
-    while (i < 100000)
+    while (i < 10000)
     {
    //      pthread_mutex_lock(&ph->left_fork->fork);
   //  pthread_mutex_lock(&ph->right_fork->fork);
@@ -123,9 +134,9 @@ void *thread(void* arg)
    // pthread_mutex_unlock(&ph->right_fork->fork);
     //pthread_mutex_unlock(&mut);
     }
-    pthread_mutex_unlock(&(ph->left_fork->fork));
-   pthread_mutex_unlock(&(ph->right_fork->fork));
-
+//    pthread_mutex_unlock(&(ph->forks[ph->right_fork].fork));
+//   pthread_mutex_unlock(&(ph->forks[ph->right_fork].fork));
+    
     //  pthread_mutex_destroy(&ph->left_fork->fork);
     //  pthread_mutex_destroy(&ph->right_fork->fork);
    
