@@ -20,6 +20,8 @@ void set_philos(t_data *data, t_fork *fork)
         data->philosophers[i].full = 0;
         data->philosophers[i].right_fork = i;
         data->philosophers[i].left_fork = (i+1) % data->number_of_philosophers;
+        if (data->number_of_philosophers == 1)
+            data->philosophers[i].left_fork = 1;
         data->philosophers[i].forks = data->forks;
         data->philosophers[i].data = data;
         //set_forks_to_philos(data, i);
@@ -74,10 +76,16 @@ void philo_creat(char **args)
         printf("#|\n");
     }
     set_philos(data, data->forks);
-    printf("[#\n\n\n\n\n\n");
+    i = 0;
+    while (i < data->number_of_philosophers)
+    {
+        printf("left > %d   <>  right %d\n", data->philosophers[i].left_fork,data->philosophers[i].right_fork );
+        i++;
+    }
     data->time_to_die = atoi(args[2]);
     data->time_to_eat = atoi(args[3]);
     data->time_to_sleep = atoi(args[4]);
+    data->number_of_times_each_philosopher_must_eat = atoi(args[5]);
     
     i = 0;
      i = 0;
@@ -118,18 +126,18 @@ void *thread(void* arg)
     if (ph->philo_id % 2 == 0)
         {
             printf("philo %d is thinking..\n", ph->philo_id);
-            usleep(500);
+            usleep(10000);
         }
     // x; current time 
     while (1)
     {
         // death -> check last time eat compared to current time eat: exit 
-        
+        usleep(40);
         // checks if philo is full .. exit 
         printf("philo %d is thinking..\n", ph->philo_id);
         //printf("\t\t\t\t->>>>!%d!\n", ph->data->time_to_sleep);
         pthread_mutex_lock(&(ph->forks[ph->left_fork].fork));
-        printf("philo %d has taken left fork nbr : %d..\n", ph->philo_id, ph->left_fork );
+        printf("philo %d has taken left fork nbr : %d|%d..\n", ph->philo_id, ph->left_fork, ph->right_fork );
         pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
         printf("philo %d has taken right fork nbr : %d..\n", ph->philo_id, ph->right_fork);
         printf("philo %d is eating..\n", ph->philo_id);
@@ -137,15 +145,14 @@ void *thread(void* arg)
         usleep(ph->data->time_to_sleep);
         pthread_mutex_unlock(&(ph->forks[ph->right_fork].fork));
         pthread_mutex_unlock(&(ph->forks[ph->left_fork].fork));
-        usleep(10);
         
         // philo is dead ?
         // if x >= arg--> time_to_die
         //      death;
-        if (ph->meals_count == 5)
+        if (ph->meals_count == ph->data->number_of_times_each_philosopher_must_eat )
             {
                 break;
-            }
+                }
     } 
    return (0);
 }
@@ -164,7 +171,7 @@ void *thread(void* arg)
 
 int main(int argc, char **argv)
 {
-    if (argc != 5)
+    if (argc != 6)
         {
             printf("args!");
             return (0);
