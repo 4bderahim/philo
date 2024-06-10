@@ -41,7 +41,7 @@ void d()
 {
     system("leaks -q a.out");
 }
-void philo_creat()
+void philo_creat(char **args)
 {
     t_data *data;
     int i;
@@ -49,13 +49,15 @@ void philo_creat()
     data = (t_data *) malloc(sizeof(t_data));
     if (!data)
        return ;
-    data->number_of_philosophers = 5;
+   printf("\t\t\t||%d||\n\n\n\n\n", atoi(args[1]));
+    data->number_of_philosophers = atoi(args[1]);
     data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
     if (!data->philosophers)
         {
             printf("[-] error in malloc\n");
             exit(1);
         }
+    
     data->forks = (t_fork *) malloc(sizeof(t_fork) *data->number_of_philosophers);
     if (!data->forks)
         {
@@ -73,10 +75,13 @@ void philo_creat()
     }
     set_philos(data, data->forks);
     printf("[#\n\n\n\n\n\n");
+    data->time_to_die = atoi(args[2]);
+    data->time_to_eat = atoi(args[3]);
+    data->time_to_sleep = atoi(args[4]);
     
     i = 0;
      i = 0;
-    while (i < 5)
+    while (i < data->number_of_philosophers)
     {
         pthread_mutex_init(&(data->forks[i].fork), NULL);
      //   pthread_mutex_init(&(data->philosophers[i].forks[data->philosophers[i].left_fork].fork), NULL);
@@ -84,7 +89,7 @@ void philo_creat()
         i++;
     }
     i = 0;
-    while (i < 5)
+    while (i < data->number_of_philosophers)
     {
      //   pthread_mutex_init(&data->forks[i].fork, NULL);
         pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
@@ -93,7 +98,7 @@ void philo_creat()
      
     i = 0;
     data->i = 0;
-    while (i < 5)
+    while (i < data->number_of_philosophers)
     {
         pthread_join(data->philosophers[i].thread, NULL);
         usleep(1);
@@ -109,32 +114,34 @@ void *thread(void* arg)
 
     t_philosopher *ph;
     long int i;
-
     ph = (t_philosopher *) arg;
     if (ph->philo_id % 2 == 0)
         {
             printf("philo %d is thinking..\n", ph->philo_id);
-            usleep(100);
+            usleep(500);
         }
- 
+    // x; current time 
     while (1)
     {
         // death -> check last time eat compared to current time eat: exit 
         
         // checks if philo is full .. exit 
         printf("philo %d is thinking..\n", ph->philo_id);
-        
+        //printf("\t\t\t\t->>>>!%d!\n", ph->data->time_to_sleep);
         pthread_mutex_lock(&(ph->forks[ph->left_fork].fork));
         printf("philo %d has taken left fork nbr : %d..\n", ph->philo_id, ph->left_fork );
         pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
         printf("philo %d has taken right fork nbr : %d..\n", ph->philo_id, ph->right_fork);
         printf("philo %d is eating..\n", ph->philo_id);
         ph->meals_count++;
-        usleep(125000);
+        usleep(ph->data->time_to_sleep);
         pthread_mutex_unlock(&(ph->forks[ph->right_fork].fork));
         pthread_mutex_unlock(&(ph->forks[ph->left_fork].fork));
-        printf("philo %d is sleeping ..\n", ph->philo_id);
-        usleep(1100250);
+        usleep(10);
+        
+        // philo is dead ?
+        // if x >= arg--> time_to_die
+        //      death;
         if (ph->meals_count == 5)
             {
                 break;
@@ -158,7 +165,12 @@ void *thread(void* arg)
 int main(int argc, char **argv)
 {
     if (argc != 5)
-    philo_creat();
+        {
+            printf("args!");
+            return (0);
+        }
+     
+    philo_creat(argv);
     printf("threads are Done : %ld\n",x);
    
     return (0);
