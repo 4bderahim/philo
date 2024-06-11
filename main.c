@@ -151,7 +151,7 @@ void sleeping(t_philosopher *philo)
     printf("philo %d is sleeping..\n", philo->philo_id);
     usleep(philo->data->time_to_sleep * 1000);
     gettimeofday(&end, NULL);
-    if (((end.tv_usec) - (start.tv_usec)) >= (philo->data->time_to_sleep * 1000))
+    if (((((end.tv_sec - start.tv_sec) * 100000)) + (end.tv_usec - start.tv_usec)) >= (philo->data->time_to_sleep * 1000))
     {
         printf("philo %d \t\t\t\t\t------->  IS DEAD!", philo->philo_id);
     }
@@ -209,12 +209,17 @@ int main(int argc, char **argv)
     
     gettimeofday(&start, NULL);
     
-    printf("\t start sec: %d\n", start.tv_usec);
+    printf("\t start sec: %ld\n", start.tv_sec);
     sleep(2);
-    // philo_creat(argv);
-    printf("threads are Done : %ld\n",x);
     gettimeofday(&end, NULL);
-    printf("%d", ((end.tv_usec) - (start.tv_usec)));
+    //printf("|\t | : %ld\n", end.tv_sec);
+    // philo_creat(argv);
+    long seconds = end.tv_sec - start.tv_sec;
+    long microseconds = end.tv_usec - start.tv_usec;
+    long elapsed_microseconds = seconds * 1000000 + microseconds;
+
+    
+    printf("%ld", (((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec));
     if (argc != 6)
         {
             printf("args!");
