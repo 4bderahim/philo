@@ -149,11 +149,11 @@ void sleeping(t_philosopher *philo)
     
     pthread_mutex_lock(&philo->th_mutex);
     gettimeofday(&start, NULL);
-    printf("|%dstart>%ld||\n",philo->philo_id,(((start.tv_sec) * 1000000) + start.tv_usec) / 1000);
+    //printf("|%dstart>%ld||\n",philo->philo_id,((start.tv_sec ) + start.tv_usec));
     printf("philo %d is sleeping..\n", philo->philo_id);
     usleep(philo->data->time_to_sleep * 1000);
     gettimeofday(&end, NULL);
-    printf("\t\t|%dend>%ld||\n",philo->philo_id,(((end.tv_sec) * 1000000) + end.tv_usec)/ 1000 );
+    //printf("\t\t|%dend>%ld||\n",philo->philo_id,((end.tv_sec) + end.tv_usec) );
     if (((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec))  / 1000) >= (philo->data->time_to_sleep ))
     {
         printf("philo %d ------->  IS DEAD!####\n", philo->philo_id);
