@@ -140,9 +140,10 @@ void *thread(void* arg)
         printf("philo %d has taken left fork nbr : %d|%d..\n", ph->philo_id, ph->left_fork, ph->right_fork );
         pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
         printf("philo %d has taken right fork nbr : %d..\n", ph->philo_id, ph->right_fork);
-        printf("philo %d is eating..\n", ph->philo_id);
+        
         ph->meals_count++;
         usleep(ph->data->time_to_sleep);
+        printf("philo %d is sleeping..\n", ph->philo_id);
         pthread_mutex_unlock(&(ph->forks[ph->right_fork].fork));
         pthread_mutex_unlock(&(ph->forks[ph->left_fork].fork));
         
