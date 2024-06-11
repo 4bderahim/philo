@@ -146,15 +146,17 @@ void sleeping(t_philosopher *philo)
     struct timeval start, end;
     
     
-    printf("\t\t|%d||",end.tv_usec /  1000);
+    
     pthread_mutex_lock(&philo->th_mutex);
     gettimeofday(&start, NULL);
+    printf("|%dstart>%ld||\n",philo->philo_id,(((start.tv_sec) * 1000000) + start.tv_usec) / 1000);
     printf("philo %d is sleeping..\n", philo->philo_id);
     usleep(philo->data->time_to_sleep * 1000);
     gettimeofday(&end, NULL);
+    printf("\t\t|%dend>%ld||\n",philo->philo_id,(((end.tv_sec) * 1000000) + end.tv_usec)/ 1000 );
     if (((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec))  / 1000) >= (philo->data->time_to_sleep ))
     {
-        printf("philo %d \t\t\t\t\t------->  IS DEAD!\n", philo->philo_id);
+        printf("philo %d ------->  IS DEAD!####\n", philo->philo_id);
         philo->data->end_party = 1;
     }
     pthread_mutex_unlock(&philo->th_mutex);
@@ -197,8 +199,9 @@ void *thread(void* arg)
         //      death;
         if (ph->meals_count == ph->data->number_of_times_each_philosopher_must_eat  || ph->data->end_party)
             {
+                exit(1);
                 break;
-                }
+            }
     } 
    return (0);
 }
