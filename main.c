@@ -53,8 +53,9 @@ void philo_creat(char **args)
     data = (t_data *) malloc(sizeof(t_data));
     if (!data)
        return ;
-   printf("\t\t\t||%d||\n\n\n\n\n", atoi(args[1]));
+   //printf("\t\t\t||%d||\n\n\n\n\n", atoi(args[1]));
     data->number_of_philosophers = atoi(args[1]);
+    data->end_party = 0;
     data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
     if (!data->philosophers)
         {
@@ -151,9 +152,10 @@ void sleeping(t_philosopher *philo)
     printf("philo %d is sleeping..\n", philo->philo_id);
     usleep(philo->data->time_to_sleep * 1000);
     gettimeofday(&end, NULL);
-    if (((((end.tv_sec - start.tv_sec) * 100000)) + (end.tv_usec - start.tv_usec)) >= (philo->data->time_to_sleep * 1000))
+    if (((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec))  / 1000) >= (philo->data->time_to_sleep ))
     {
-        printf("philo %d \t\t\t\t\t------->  IS DEAD!", philo->philo_id);
+        printf("philo %d \t\t\t\t\t------->  IS DEAD!\n", philo->philo_id);
+        philo->data->end_party = 1;
     }
     pthread_mutex_unlock(&philo->th_mutex);
 }
@@ -193,7 +195,7 @@ void *thread(void* arg)
         // philo is dead ?
         // if x >= arg--> time_to_die
         //      death;
-        if (ph->meals_count == ph->data->number_of_times_each_philosopher_must_eat )
+        if (ph->meals_count == ph->data->number_of_times_each_philosopher_must_eat  || ph->data->end_party)
             {
                 break;
                 }
@@ -213,13 +215,13 @@ int main(int argc, char **argv)
     sleep(2);
     gettimeofday(&end, NULL);
     //printf("|\t | : %ld\n", end.tv_sec);
-    // philo_creat(argv);
-    long seconds = end.tv_sec - start.tv_sec;
-    long microseconds = end.tv_usec - start.tv_usec;
-    long elapsed_microseconds = seconds * 1000000 + microseconds;
+     philo_creat(argv);
+    // long seconds = end.tv_sec - start.tv_sec;
+    // long microseconds = end.tv_usec - start.tv_usec;
+    // long elapsed_microseconds = seconds * 1000000 + microseconds;
 
     
-    printf("%ld", (((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec));
+   // printf("%ld", ( ( ((end.tv_sec - start.tv_sec) * 1000000)  + (end.tv_usec - start.tv_usec))  / 1000));
     if (argc != 6)
         {
             printf("args!");
