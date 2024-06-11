@@ -24,6 +24,7 @@ typedef struct s_philosopher
     pthread_mutex_t th_mutex;
     t_fork  *forks;
     t_data *data;
+    int dinner_end;
     int *index;
 } t_philosopher;
 typedef struct s_data

@@ -19,6 +19,7 @@ void set_philos(t_data *data, t_fork *fork)
         data->philosophers[i].meals_count = 0;
         data->philosophers[i].full = 0;
         data->philosophers[i].right_fork = i;
+        data->philosophers[i].dinner_end = 0;
         data->philosophers[i].left_fork = (i+1) % data->number_of_philosophers;
         if (data->number_of_philosophers == 1)
             data->philosophers[i].left_fork = 1;
@@ -141,15 +142,23 @@ void right_fork(t_philosopher *philo)
     printf("philo %d has taken right fork..\n", philo->philo_id);
     pthread_mutex_unlock(&philo->th_mutex);
 }
+
+void spread_the_word(t_data *data)
+{
+    int i;
+    i = 0;
+    while (i < data->number_of_philosophers)
+    {
+        data->philosophers[i].dinner_end = 1;
+        i++;
+    }
+}
 void sleeping(t_philosopher *philo)
 {
     struct timeval start, end;
     
-    
-    
     pthread_mutex_lock(&philo->th_mutex);
     gettimeofday(&start, NULL);
-    //printf("|%dstart>%ld||\n",philo->philo_id,((start.tv_sec ) + start.tv_usec));
     printf("philo %d is sleeping..\n", philo->philo_id);
     usleep(philo->data->time_to_sleep * 1000);
     gettimeofday(&end, NULL);
@@ -157,6 +166,7 @@ void sleeping(t_philosopher *philo)
     if (((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec))  / 1000) >= (philo->data->time_to_sleep ))
     {
         printf("philo %d ------->  IS DEAD!####\n", philo->philo_id);
+
         philo->data->end_party = 1;
     }
     pthread_mutex_unlock(&philo->th_mutex);
@@ -166,6 +176,7 @@ void sleeping(t_philosopher *philo)
 // {
 //     //
 // }
+
 void *thread(void* arg)
 {
     t_philosopher *ph;
@@ -199,7 +210,6 @@ void *thread(void* arg)
         //      death;
         if (ph->meals_count == ph->data->number_of_times_each_philosopher_must_eat  || ph->data->end_party)
             {
-                exit(1);
                 break;
             }
     } 
