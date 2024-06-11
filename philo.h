@@ -21,6 +21,7 @@ typedef struct s_philosopher
     int meals_count;
     int     left_fork;
     int     right_fork;
+    pthread_mutex_t th_mutex;
     t_fork  *forks;
     t_data *data;
     int *index;

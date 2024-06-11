@@ -1,5 +1,5 @@
 #include "philo.h"
-
+#include <sys/time.h>
 long int x = 0;
 void *thread(void* arg);
 
@@ -43,6 +43,8 @@ void d()
 {
     system("leaks -q a.out");
 }
+
+
 void philo_creat(char **args)
 {
     t_data *data;
@@ -66,14 +68,12 @@ void philo_creat(char **args)
             printf("[-] error in malloc\n");
             exit(1);
         }
-    
     i = 0;
     while (i < data->number_of_philosophers)
     {
         mutex_calls(&data->forks[i].fork, 'i');
         data->forks[i].fork_id = i;
         i++;
-        printf("#|\n");
     }
     set_philos(data, data->forks);
     i = 0;
@@ -88,12 +88,11 @@ void philo_creat(char **args)
     data->number_of_times_each_philosopher_must_eat = atoi(args[5]);
     
     i = 0;
-     i = 0;
+    i = 0;
     while (i < data->number_of_philosophers)
     {
         pthread_mutex_init(&(data->forks[i].fork), NULL);
-     //   pthread_mutex_init(&(data->philosophers[i].forks[data->philosophers[i].left_fork].fork), NULL);
-      //  pthread_mutex_init(&(data->philosophers[i].forks[data->philosophers[i].right_fork].fork), NULL);
+        pthread_mutex_init(&(data->philosophers[i].th_mutex), NULL);
         i++;
     }
     i = 0;
@@ -116,7 +115,36 @@ void philo_creat(char **args)
         i++;
     }
 }
- 
+void eating(t_philosopher *philo)
+{
+    pthread_mutex_lock(&philo->th_mutex);
+    printf("philo %d is eating..\n", philo->philo_id);
+    usleep(philo->data->time_to_sleep);
+    pthread_mutex_unlock(&philo->th_mutex);
+}
+void thinking(t_philosopher *philo)
+{
+    pthread_mutex_lock(&philo->th_mutex);
+    printf("philo %d is thinking..\n", philo->philo_id);
+    pthread_mutex_unlock(&philo->th_mutex);
+}
+void left_fork(t_philosopher *philo)
+{
+    pthread_mutex_lock(&philo->th_mutex);
+    printf("philo %d has taken left fork..\n", philo->philo_id);
+    pthread_mutex_unlock(&philo->th_mutex);
+}
+void right_fork(t_philosopher *philo)
+{
+    pthread_mutex_lock(&philo->th_mutex);
+    printf("philo %d has taken right fork..\n", philo->philo_id);
+    pthread_mutex_unlock(&philo->th_mutex);
+}
+// make a func to set all millisecond related value elements //..
+int set_time(t_data * )
+{
+    //
+}
 void *thread(void* arg)
 {
 
@@ -133,16 +161,13 @@ void *thread(void* arg)
     {
         // death -> check last time eat compared to current time eat: exit 
         usleep(40);
-        // checks if philo is full .. exit 
-        printf("philo %d is thinking..\n", ph->philo_id);
-        //printf("\t\t\t\t->>>>!%d!\n", ph->data->time_to_sleep);
+        thinking(ph);
         pthread_mutex_lock(&(ph->forks[ph->left_fork].fork));
-        printf("philo %d has taken left fork nbr : %d|%d..\n", ph->philo_id, ph->left_fork, ph->right_fork );
+        left_fork(ph);
         pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
-        printf("philo %d has taken right fork nbr : %d..\n", ph->philo_id, ph->right_fork);
-        
+        left_fork(ph);
+        eating(ph);
         ph->meals_count++;
-        usleep(ph->data->time_to_sleep);
         printf("philo %d is sleeping..\n", ph->philo_id);
         pthread_mutex_unlock(&(ph->forks[ph->right_fork].fork));
         pthread_mutex_unlock(&(ph->forks[ph->left_fork].fork));
@@ -159,27 +184,26 @@ void *thread(void* arg)
 }
 
 
-
-
-//  i = 0;
-    
-//     while (i < data->number_of_philosophers)
-//     {
-//         printf("|philo id :%d\t\this left fork  :%d\n", data->philosophers[i].philo_id, data->philosophers[i].left_fork->fork_id);
-//         printf("|philo id :%d\t\this right fork :%d\n\n", data->philosophers[i].philo_id,  data->philosophers[i].right_fork->fork_id);
-//         i++;
-//     }
-
 int main(int argc, char **argv)
 {
+    struct timeval start, end;
+    int t, f;
+
+    gettimeofday(&start, NULL);
+    
+    printf("\t sec: %d\n", start.tv_usec);
+    usleep(21);
+    
+    
+    
+    //philo_creat(argv);
+    printf("threads are Done : %ld\n",x);
+    gettimeofday(&end, NULL);
+    printf("\t\t|%d||",end.tv_usec /  1000);
     if (argc != 6)
         {
             printf("args!");
             return (0);
         }
-     
-    philo_creat(argv);
-    printf("threads are Done : %ld\n",x);
-   
     return (0);
 }
