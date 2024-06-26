@@ -19,7 +19,7 @@ void set_philos(t_data *data, t_fork *fork)
         data->philosophers[i].meals_count = 0;
         data->philosophers[i].full = 0;
         data->philosophers[i].right_fork = i;
-        data->philosophers[i].dinner_end = 0;
+        data->dinner_end = 0;
         data->philosophers[i].left_fork = (i+1) % data->number_of_philosophers;
         if (data->number_of_philosophers == 1)
             data->philosophers[i].left_fork = 1;
@@ -146,11 +146,9 @@ void spread_the_word(t_data *data)
 {
     int i;
     i = 0;
-    while (i < data->number_of_philosophers)
-    {
-        data->philosophers[i].dinner_end = 1;
-        i++;
-    }
+    data->dinner_end = 1;
+        // pthread_mutex_unlock(&data->philosophers[i].th_mutex);
+     
 }
 void sleeping(t_philosopher *philo)
 {
@@ -165,7 +163,10 @@ void sleeping(t_philosopher *philo)
     if (((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec))  / 1000) >= (philo->data->time_to_sleep ))
     {
         printf("philo %d ------->  IS DEAD!####\n", philo->philo_id);
-        spread_the_word(philo->data);
+        pthread_mutex_lock(&philo->data->th_dinner_end);
+        philo->data->dinner_end =1;
+        pthread_mutex_unlock(&philo->data->th_dinner_end);
+        //spread_the_word(philo->data);
         //philo->data->end_party = 1;
     }
     pthread_mutex_unlock(&philo->th_mutex);
@@ -190,18 +191,64 @@ void *thread(void* arg)
     // x; current time
     while (1)
     {
-        
+        // printf("\t\t|%d|%d\n", ph->philo_id, ph->data->dinner_end);
+        pthread_mutex_lock(&ph->data->th_dinner_end);
+        if (ph->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD1\n");
+                pthread_mutex_unlock(&ph->data->th_dinner_end);
+                break;
+            }
+        // printf("\t+++++> NAAAAAAAA DEAAAD 1\n");
+        pthread_mutex_unlock(&ph->data->th_dinner_end);
         // death -> check last time eat compared to current time eat: exit 
         usleep(40);
         thinking(ph);
+        pthread_mutex_lock(&ph->data->th_dinner_end);
+        
+        pthread_mutex_unlock(&ph->data->th_dinner_end);
         pthread_mutex_lock(&(ph->forks[ph->left_fork].fork));
+        if (ph->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD2\n");
+                pthread_mutex_unlock(&ph->data->th_dinner_end);
+                break;
+            }
+        // printf("\t+++++> NAAAAAAAA DEAAAD\n");
         left_fork(ph);
         pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
-        left_fork(ph);
+        pthread_mutex_lock(&ph->data->th_dinner_end);
+        if (ph->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD3\n");
+                pthread_mutex_unlock(&ph->data->th_dinner_end);
+                break;
+            }
+        // printf("\t+++++> NAAAAAAAA DEAAAD\n");
+        pthread_mutex_unlock(&ph->data->th_dinner_end);
+        right_fork(ph);
         ph->meals_count++;
+        pthread_mutex_lock(&ph->data->th_dinner_end);
+        if (ph->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD4\n");
+                pthread_mutex_unlock(&ph->data->th_dinner_end);
+                break;
+            }
+        // printf("\t+++++> NAAAAAAAA DEAAAD 2\n");
+        pthread_mutex_unlock(&ph->data->th_dinner_end);
         eating(ph);
         
         printf("philo %d is sleeping..\n", ph->philo_id);
+        pthread_mutex_lock(&ph->data->th_dinner_end);
+        if (ph->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD5\n");
+                pthread_mutex_unlock(&ph->data->th_dinner_end);
+                break;
+            }
+        // printf("\t+++++> NAAAAAAAA DEAAAD 3\n");
+        pthread_mutex_unlock(&ph->data->th_dinner_end);
         sleeping(ph);
         pthread_mutex_unlock(&(ph->forks[ph->right_fork].fork));
         pthread_mutex_unlock(&(ph->forks[ph->left_fork].fork));    
