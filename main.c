@@ -117,30 +117,64 @@ void philo_creat(char **args)
         i++;
     }
 }
-void eating(t_philosopher *philo)
+int eating(t_philosopher *philo)
 {
     pthread_mutex_lock(&philo->th_mutex);
+    if (philo->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD1\n");
+               // pthread_mutex_unlock(&ph->th_mutex);
+                pthread_mutex_unlock(&philo->th_mutex);
+                return (1);
+            }
     printf("philo %d is eating..\n", philo->philo_id);
     usleep(philo->data->time_to_eat * 1000);
     pthread_mutex_unlock(&philo->th_mutex);
+    return (0);
 }
-void thinking(t_philosopher *philo)
+int thinking(t_philosopher *philo)
 {
     pthread_mutex_lock(&philo->th_mutex);
+    if (philo->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD1\n");
+               // pthread_mutex_unlock(&ph->th_mutex);
+                pthread_mutex_unlock(&philo->th_mutex);
+                return (1);
+            }
     printf("philo %d is thinking..\n", philo->philo_id);
     pthread_mutex_unlock(&philo->th_mutex);
+    return (0);
 }
-void left_fork(t_philosopher *philo)
+int left_fork(t_philosopher *philo)
 {
     pthread_mutex_lock(&philo->th_mutex);
+    if (philo->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD1\n");
+               // pthread_mutex_unlock(&ph->th_mutex);
+                pthread_mutex_unlock(&philo->th_mutex);
+                return (1);
+            }
+    
     printf("philo %d has taken left fork..\n", philo->philo_id);
     pthread_mutex_unlock(&philo->th_mutex);
+    return (0);
 }
-void right_fork(t_philosopher *philo)
+int right_fork(t_philosopher *philo)
 {
     pthread_mutex_lock(&philo->th_mutex);
+    if (philo->data->dinner_end == 1)
+            {
+                printf("\t+++++> DEAAAD1\n");
+               // pthread_mutex_unlock(&ph->th_mutex);
+               pthread_mutex_unlock(&philo->th_mutex);
+                return (1);
+            }
+    
     printf("philo %d has taken right fork..\n", philo->philo_id);
     pthread_mutex_unlock(&philo->th_mutex);
+    return (0);
 }
 
 void spread_the_word(t_data *data)
@@ -151,7 +185,7 @@ void spread_the_word(t_data *data)
         // pthread_mutex_unlock(&data->philosophers[i].th_mutex);
      
 }
-void sleeping(t_philosopher *philo)
+int sleeping(t_philosopher *philo)
 {
     struct timeval start, end;
     
@@ -169,8 +203,11 @@ void sleeping(t_philosopher *philo)
         pthread_mutex_unlock(&philo->data->th_dinner_end);
         //spread_the_word(philo->data);
         //philo->data->end_party = 1;
+        pthread_mutex_unlock(&philo->th_mutex);
+        return (1);
     }
     pthread_mutex_unlock(&philo->th_mutex);
+    return (0);
 }
 // make a func to set all millisecond related value elements //..
 // int set_time(t_data *)
@@ -204,50 +241,33 @@ void *thread(void* arg)
      //   pthread_mutex_unlock(&ph->th_mutex);
         // death -> check last time eat compared to current time eat: exit 
         usleep(40);
-        thinking(ph);
+        if (thinking(ph))
+            break;
        // pthread_mutex_lock(&ph->th_mutex);
         
         //pthread_mutex_unlock(&ph->th_mutex);
         pthread_mutex_lock(&(ph->forks[ph->left_fork].fork));
-        if (ph->data->dinner_end == 1)
-            {
-                printf("\t+++++> DEAAAD2\n");
-                //pthread_mutex_unlock(&ph->th_mutex);
-                break;
-            }
+        
         // printf("\t+++++> NAAAAAAAA DEAAAD\n");
-        left_fork(ph);
+        if (left_fork(ph))
+            break;
         pthread_mutex_lock(&(ph->forks[ph->right_fork].fork));
      //   pthread_mutex_lock(&ph->th_mutex);
-        if (ph->data->dinner_end == 1)
-            {
-                printf("\t+++++> DEAAAD3\n");
-              //  pthread_mutex_unlock(&ph->th_mutex);
-                break;
-            }
+       
         // printf("\t+++++> NAAAAAAAA DEAAAD\n");
        // pthread_mutex_unlock(&ph->th_mutex);
-        right_fork(ph);
+        if (right_fork(ph))
+            break;
         ph->meals_count++;
        // pthread_mutex_lock(&ph->th_mutex);
-        if (ph->data->dinner_end == 1)
-            {
-                printf("\t+++++> DEAAAD4\n");
-             //   pthread_mutex_unlock(&ph->th_mutex);
-                break;
-            }
+       
         // printf("\t+++++> NAAAAAAAA DEAAAD 2\n");
         //pthread_mutex_unlock(&ph->th_mutex);
-        eating(ph);
-        
+        if (eating(ph)    )
+            break;
         printf("philo %d is sleeping..\n", ph->philo_id);
       //  pthread_mutex_lock(&ph->th_mutex);
-        if (ph->data->dinner_end == 1)
-            {
-                printf("\t+++++> DEAAAD5\n");
-            //    pthread_mutex_unlock(&ph->th_mutex);
-                break;
-            }
+       
         // printf("\t+++++> NAAAAAAAA DEAAAD 3\n");
        // pthread_mutex_unlock(&ph->th_mutex);
         sleeping(ph);
