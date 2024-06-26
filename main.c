@@ -63,7 +63,6 @@ void philo_creat(char **args)
             printf("[-] error in malloc\n");
             exit(1);
         }
-    
     data->forks = (t_fork *) malloc(sizeof(t_fork) *data->number_of_philosophers);
     if (!data->forks)
         {
@@ -166,8 +165,8 @@ void sleeping(t_philosopher *philo)
     if (((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec))  / 1000) >= (philo->data->time_to_sleep ))
     {
         printf("philo %d ------->  IS DEAD!####\n", philo->philo_id);
-
-        philo->data->end_party = 1;
+        spread_the_word(philo->data);
+        //philo->data->end_party = 1;
     }
     pthread_mutex_unlock(&philo->th_mutex);
 }
@@ -191,6 +190,7 @@ void *thread(void* arg)
     // x; current time
     while (1)
     {
+        
         // death -> check last time eat compared to current time eat: exit 
         usleep(40);
         thinking(ph);
@@ -207,11 +207,8 @@ void *thread(void* arg)
         pthread_mutex_unlock(&(ph->forks[ph->left_fork].fork));    
         // philo is dead ?
         // if x >= arg--> time_to_die
-        //      death;
-        if (ph->meals_count == ph->data->number_of_times_each_philosopher_must_eat  || ph->data->end_party)
-            {
-                break;
-            }
+        // death;
+        
     } 
    return (0);
 }
