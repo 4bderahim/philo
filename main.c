@@ -20,6 +20,8 @@ void set_philos(t_data *data, t_fork *fork)
         data->philosophers[i].full = 0;
         data->philosophers[i].right_fork = i;
         data->dinner_end = 0;
+        data->philosophers[i].last_time_ate.tv_sec = 0;
+        data->philosophers[i].last_time_ate.tv_usec = 0;
         data->philosophers[i].left_fork = (i+1) % data->number_of_philosophers;
         if (data->number_of_philosophers == 1)
             data->philosophers[i].left_fork = 1;
@@ -83,7 +85,6 @@ void philo_creat(char **args)
         printf("left > %d   <>  right %d\n", data->philosophers[i].left_fork,data->philosophers[i].right_fork );
         i++;
     }
-    
     data->time_to_die = atoi(args[2]);
     data->time_to_eat = atoi(args[3]);
     data->time_to_sleep = atoi(args[4]);
@@ -119,16 +120,31 @@ void philo_creat(char **args)
 }
 int eating(t_philosopher *philo)
 {
+    struct timeval end, start;
+    start = philo->last_time_ate;
+
+    gettimeofday(&end, NULL);
+    printf("\t\t[time spent: %ld ~ time to spent:%d]\n", (((((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec)) / 1000),philo->data->time_to_sleep);
+    if (start.tv_sec != 0 && ((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec)) / 1000) >= (philo->data->time_to_die ))
+    {
+        printf("philo %d -------> IS DEAD!####|\n", philo->philo_id);
+        pthread_mutex_lock(&philo->data->th_dinner_end);
+        philo->data->dinner_end =1;
+        pthread_mutex_unlock(&philo->data->th_dinner_end);
+        //spread_the_word(philo->data);
+        //philo->data->end_party = 1;
+        pthread_mutex_unlock(&philo->th_mutex);
+        return (1);
+    }
     pthread_mutex_lock(&philo->th_mutex);
     if (philo->data->dinner_end == 1)
             {
-                printf("\t+++++> DEAAAD1\n");
-               // pthread_mutex_unlock(&ph->th_mutex);
                 pthread_mutex_unlock(&philo->th_mutex);
                 return (1);
             }
     printf("philo %d is eating..\n", philo->philo_id);
     usleep(philo->data->time_to_eat * 1000);
+    gettimeofday(&philo->last_time_ate, NULL);
     pthread_mutex_unlock(&philo->th_mutex);
     return (0);
 }
@@ -137,8 +153,6 @@ int thinking(t_philosopher *philo)
     pthread_mutex_lock(&philo->th_mutex);
     if (philo->data->dinner_end == 1)
             {
-                printf("\t+++++> DEAAAD1\n");
-               // pthread_mutex_unlock(&ph->th_mutex);
                 pthread_mutex_unlock(&philo->th_mutex);
                 return (1);
             }
@@ -151,8 +165,6 @@ int left_fork(t_philosopher *philo)
     pthread_mutex_lock(&philo->th_mutex);
     if (philo->data->dinner_end == 1)
             {
-                printf("\t+++++> DEAAAD1\n");
-               // pthread_mutex_unlock(&ph->th_mutex);
                 pthread_mutex_unlock(&philo->th_mutex);
                 return (1);
             }
@@ -166,8 +178,6 @@ int right_fork(t_philosopher *philo)
     pthread_mutex_lock(&philo->th_mutex);
     if (philo->data->dinner_end == 1)
             {
-                printf("\t+++++> DEAAAD1\n");
-               // pthread_mutex_unlock(&ph->th_mutex);
                pthread_mutex_unlock(&philo->th_mutex);
                 return (1);
             }
@@ -182,30 +192,20 @@ void spread_the_word(t_data *data)
     int i;
     i = 0;
     data->dinner_end = 1;
-        // pthread_mutex_unlock(&data->philosophers[i].th_mutex);
-     
+    // pthread_mutex_unlock(&data->philosophers[i].th_mutex);
 }
 int sleeping(t_philosopher *philo)
 {
     struct timeval start, end;
-    
+
     pthread_mutex_lock(&philo->th_mutex);
     gettimeofday(&start, NULL);
     printf("philo %d is sleeping..\n", philo->philo_id);
     usleep(philo->data->time_to_sleep * 1000);
     gettimeofday(&end, NULL);
+    
     //printf("\t\t|%dend>%ld||\n",philo->philo_id,((end.tv_sec) + end.tv_usec) );
-    if (((( ((end.tv_sec - start.tv_sec) * 1000000)) + (end.tv_usec - start.tv_usec))  / 1000) >= (philo->data->time_to_sleep ))
-    {
-        printf("philo %d ------->  IS DEAD!####\n", philo->philo_id);
-        pthread_mutex_lock(&philo->data->th_dinner_end);
-        philo->data->dinner_end =1;
-        pthread_mutex_unlock(&philo->data->th_dinner_end);
-        //spread_the_word(philo->data);
-        //philo->data->end_party = 1;
-        pthread_mutex_unlock(&philo->th_mutex);
-        return (1);
-    }
+    
     pthread_mutex_unlock(&philo->th_mutex);
     return (0);
 }
@@ -263,7 +263,7 @@ void *thread(void* arg)
        
         // printf("\t+++++> NAAAAAAAA DEAAAD 2\n");
         //pthread_mutex_unlock(&ph->th_mutex);
-        if (eating(ph)    )
+        if (eating(ph))
             break;
         printf("philo %d is sleeping..\n", ph->philo_id);
       //  pthread_mutex_lock(&ph->th_mutex);
