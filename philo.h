@@ -31,6 +31,12 @@ typedef struct s_philosopher
 typedef struct s_data
 {
     pthread_t thread;
+    pthread_mutex_t m_sleep;
+    pthread_mutex_t m_think;
+    pthread_mutex_t m_eat;
+    pthread_mutex_t m_printf;
+    pthread_mutex_t m_left_fork;
+    pthread_mutex_t m_right_fork;
     int number_of_philosophers;
     int time_to_die;
     int time_to_eat; //
@@ -38,7 +44,6 @@ typedef struct s_data
     int start_party;
     int end_party;
     int dinner_end;
-    pthread_mutex_t th_dinner_end;
     int number_of_times_each_philosopher_must_eat;
     t_philosopher *philosophers;
     int i;
