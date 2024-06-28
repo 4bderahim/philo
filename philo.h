@@ -24,19 +24,19 @@ typedef struct s_philosopher
     pthread_mutex_t th_mutex;
     t_fork  *forks;
     t_data *data;
-    struct timeval last_time_ate;
+    long int last_time_ate;
+    
     // int dinner_end;
     int *index;
 } t_philosopher;
 typedef struct s_data
 {
     pthread_t thread;
+    long int  time_start;
     pthread_mutex_t m_sleep;
     pthread_mutex_t m_think;
     pthread_mutex_t m_eat;
     pthread_mutex_t m_printf;
-    pthread_mutex_t m_left_fork;
-    pthread_mutex_t m_right_fork;
     int number_of_philosophers;
     int time_to_die;
     int time_to_eat; //
