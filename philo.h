@@ -25,7 +25,7 @@ typedef struct s_philosopher
     t_fork  *forks;
     t_data *data;
     long int last_time_ate;
-    
+    int philo_dead;
     // int dinner_end;
     int *index;
 } t_philosopher;
