@@ -41,11 +41,14 @@ void check_checks(t_data *data)
             pthread_mutex_lock(&data->m_eat);
             if ((time_() - data->philosophers[i].last_time_ate) > data->time_to_eat)
             {
+                print_msg(&data->philosophers[i], "died");
+                pthread_mutex_lock(&data->m_printf);
                 data->dinner_end = 1;
-                print_msg(&data->philosophers[i], "is dead");
+                pthread_mutex_unlock(&data->m_printf);
             }
             i++;
             pthread_mutex_unlock(&data->m_eat);
+            usleep(1000);
         }
     }
 }
@@ -88,8 +91,6 @@ void d()
 {
     system("leaks -q a.out");
 }
-
-
 void philo_creat(char **args)
 {
     t_data *data;
@@ -182,18 +183,6 @@ void eating(t_philosopher *philo)
     pthread_mutex_unlock(&philo->forks[philo->left_fork].fork);
 }
 
-int check_dinner_end(t_philosopher *philo)
-{
-    pthread_mutex_lock(&philo->th_mutex);
-    if (philo->data->dinner_end == 1)
-            {
-                pthread_mutex_unlock(&philo->th_mutex);
-                return (1);
-            }
-    pthread_mutex_unlock(&philo->th_mutex);
-    return (0);
-}
-
 void *thread(void* arg)
 {
     t_philosopher *ph;
@@ -202,16 +191,13 @@ void *thread(void* arg)
     if (ph->philo_id % 2 == 0)
     {
         print_msg(ph, "is thinking");
-      //  printf("philo %d is thinking..\n", ph->philo_id);
         usleep(10000);
     }
     while (1)
     {
-        //usleep(40);
         eating(ph);
-        ph->meals_count++;
-        print_msg(ph, "is thinking");
         print_msg(ph, "is sleeping");
+        print_msg(ph, "is thinking");
     } 
    return (0);
 }
