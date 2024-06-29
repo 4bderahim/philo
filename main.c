@@ -28,31 +28,34 @@ void print_msg(t_philosopher *philo, char *msg)
     }
     pthread_mutex_unlock(&philo->data->m_printf);
 }
-void check_checks(t_data *data)
+void check_checks(t_philosopher *philo)
 {
     int i;
     i = 0;
 
-    while (!data->dinner_end)
+    while (1)
     {
+        
         i = 0;
-        while (i < data->number_of_philosophers)
+        while (i < philo->data->number_of_philosophers)
         {
-            pthread_mutex_lock(&data->m_eat);
-            if ((time_() - data->philosophers[i].last_time_ate) > data->time_to_eat)
+            pthread_mutex_lock(&philo->data->m_eat);
+
+            if ((time_() - philo->data->philosophers[i].last_time_ate) > philo->data->time_to_eat)
             {
-                print_msg(&data->philosophers[i], "died");
-                pthread_mutex_lock(&data->m_printf);
-                data->dinner_end = 1;
-                pthread_mutex_unlock(&data->m_printf);
+                pthread_mutex_lock(&philo->data->m_printf);
+                philo->data->dinner_end = 1;
+                pthread_mutex_unlock(&philo->data->m_printf);
+                print_msg(&philo->data->philosophers[i], "died");
             }
             i++;
-            pthread_mutex_unlock(&data->m_eat);
-            usleep(1000);
+            pthread_mutex_unlock(&philo->data->m_eat);
+            if (philo->data->dinner_end)
+                break;
+            // usleep(1000);
         }
     }
 }
-
 void set_philos(t_data *data, t_fork *fork)
 {
     int i;
@@ -125,7 +128,7 @@ void philo_creat(char **args)
     i = 0;
     while (i < data->number_of_philosophers)
     {
-        printf("left > %d   <>  right %d\n", data->philosophers[i].left_fork,data->philosophers[i].right_fork );
+        //printf("left > %d   <>  right %d\n", data->philosophers[i].left_fork,data->philosophers[i].right_fork );
         i++;
     }
     data->time_to_die = atoi(args[2]);
@@ -154,7 +157,7 @@ void philo_creat(char **args)
         pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
         i++;
     }
-    check_checks(data);
+    check_checks(data->philosophers);
     i = 0;
     data->i = 0;
     while (i < data->number_of_philosophers)
@@ -169,16 +172,17 @@ void eating(t_philosopher *philo)
 {
     struct timeval end, start;
    
-    pthread_mutex_unlock(&philo->forks[philo->left_fork].fork);
+    pthread_mutex_lock(&philo->forks[philo->left_fork].fork);
     print_msg(philo, "has taken a fork");
     pthread_mutex_lock(&philo->forks[philo->right_fork].fork);
     print_msg(philo, "has taken a fork");
     pthread_mutex_lock(&philo->data->m_eat);
     print_msg(philo, "is eating");
+    //philo->meals_count++;
     usleep(philo->data->time_to_eat * 1000);
     philo->last_time_ate = time_();
-    pthread_mutex_unlock(&philo->data->m_eat);
-    philo->meals_count++;
+   pthread_mutex_unlock(&philo->data->m_eat);
+    
     pthread_mutex_unlock(&philo->forks[philo->right_fork].fork);
     pthread_mutex_unlock(&philo->forks[philo->left_fork].fork);
 }
@@ -190,13 +194,14 @@ void *thread(void* arg)
     ph = (t_philosopher *) arg;
     if (ph->philo_id % 2 == 0)
     {
-        print_msg(ph, "is thinking");
+        //print_msg(ph, "is thinking");
         usleep(10000);
     }
-    while (1)
+    while (!ph->data->dinner_end)
     {
         eating(ph);
         print_msg(ph, "is sleeping");
+        usleep(ph->data->time_to_sleep * 1000);
         print_msg(ph, "is thinking");
     } 
    return (0);
@@ -210,7 +215,6 @@ int main(int argc, char **argv)
     
     gettimeofday(&start, NULL);
     
-    printf("\t start sec: %ld\n", start.tv_sec);
     sleep(2);
     gettimeofday(&end, NULL);
     //printf("|\t | : %ld\n", end.tv_sec);
