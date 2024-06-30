@@ -71,15 +71,9 @@ void check_checks(t_philosopher *philo)
 		// }
             if (philo->data->philosophers[i].last_time_ate != 0 &&( (get_time() - philo->data->philosophers[i].last_time_ate) > philo->data->time_to_die))
             {
-            //  printf("time:%ld\t||time to pass :%d\n" , get_time() - (philo->data->philosophers[i].last_time_ate) , philo->data->time_to_die);
-                 //pthread_mutex_lock(&philo->data->m_printf);
-                 
                  print_msg(&philo->data->philosophers[i], "died");
-                 // philo->data->dinner_end = 1;
                  set_death(philo);
-                //pthread_mutex_unlock(&philo->data->m_eat);
-                break;
-                //pthread_mutex_unlock(&philo->data->m_printf);
+                 break;
             }
             i++;
             //usleep(1000);
@@ -120,9 +114,30 @@ void mutex_calls(pthread_mutex_t *mutex, char order)
     else if (order == 'd')
         pthread_mutex_destroy(mutex);
 }
-void d()
+
+void end_dinner(t_data *data)
 {
-    system("leaks -q a.out");
+
+    int i;
+    i = 0;
+    while (i < data->number_of_philosophers)
+    {
+        pthread_mutex_destroy(&data->philosophers[i].forks->fork);
+        pthread_mutex_destroy(&data->philosophers[i].th_mutex);
+        pthread_detach(data->philosophers[i].thread);
+        i++;
+    }
+    pthread_mutex_destroy(&data->m_printf);
+    free(data->forks);
+    free(data->philosophers);
+    free(data);
+}
+void set_data_args(t_data *data, char **args)
+{
+    data->time_to_die = atoi(args[2]);
+    data->time_to_eat = atoi(args[3]);
+    data->time_to_sleep = atoi(args[4]);
+    data->number_of_times_each_philosopher_must_eat = atoi(args[5]);
 }
 void philo_creat(char **args)
 {
@@ -134,7 +149,6 @@ void philo_creat(char **args)
        return ;
    //printf("\t\t\t||%d||\n\n\n\n\n", atoi(args[1]));
     data->number_of_philosophers = atoi(args[1]);
-    data->end_party = 0;
     data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
     if (!data->philosophers)
         {
@@ -155,46 +169,34 @@ void philo_creat(char **args)
         i++;
     }
     set_philos(data, data->forks);
-    i = 0;
-    while (i < data->number_of_philosophers)
-    {
-        //printf("left > %d   <>  right %d\n", data->philosophers[i].left_fork,data->philosophers[i].right_fork );
-        i++;
-    }
-    data->time_to_die = atoi(args[2]);
-    data->time_to_eat = atoi(args[3]);
-    data->time_to_sleep = atoi(args[4]);
-    data->number_of_times_each_philosopher_must_eat = atoi(args[5]);
+    set_data_args(data,args);
     
     i = 0;
     i = 0;
     while (i < data->number_of_philosophers)
     {
         pthread_mutex_init(&(data->forks[i].fork), NULL);
-        //pthread_mutex_init(&(data->philosophers[i].th_mutex), NULL);
+        pthread_mutex_init(&(data->philosophers[i].th_mutex), NULL);
         i++;
     }
     pthread_mutex_init(&(data->m_eat), NULL);
     pthread_mutex_init(&(data->m_printf), NULL);
-    pthread_mutex_init(&(data->m_sleep), NULL);
-    pthread_mutex_init(&(data->m_think), NULL);
-
     i = 0;
     data->time_start = time_();
     while (i < data->number_of_philosophers)
     {
-     //   pthread_mutex_init(&data->forks[i].fork, NULL);
+        //pthread_mutex_init(&data->forks[i].fork, NULL);
         pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
         i++;
     }
     check_checks(data->philosophers);
     i = 0;
-    data->i = 0;
     while (i < data->number_of_philosophers)
     {
         pthread_join(data->philosophers[i].thread, NULL);
         i++;
     }
+    end_dinner(data);
 }
 void set_eattime(t_philosopher *philo)
 {
@@ -205,7 +207,7 @@ void set_eattime(t_philosopher *philo)
 void set_done_eating(t_philosopher *philo)
 {
     pthread_mutex_lock(&philo->th_mutex);
-    philo->last_time_ate = time_();
+    philo->data->dinner_end = time_();
     pthread_mutex_unlock(&philo->th_mutex);
 }
 
@@ -219,7 +221,6 @@ void eating(t_philosopher *philo)
     print_msg(philo, "has taken a fork");
     //pthread_mutex_lock(&philo->data->m_eat);
     
-    
     print_msg(philo, "is eating");
     set_eattime(philo);
     philo->meals_count++;
@@ -232,7 +233,6 @@ void eating(t_philosopher *philo)
     pthread_mutex_unlock(&philo->forks[philo->right_fork].fork);
     pthread_mutex_unlock(&philo->forks[philo->left_fork].fork);
 }
-
 void *thread(void* arg)
 {
     t_philosopher *ph;
@@ -246,43 +246,31 @@ void *thread(void* arg)
     while (!ph->data->dinner_end)
     {
         eating(ph);
-        // if (ph->data->philosophers[i].meals_count == ph->data->number_of_times_each_philosopher_must_eat)
-        //     {
-        //         //set_death(ph);
-        //         ph->data->dinner_end =1;
-        //         break;
-        //     }
-        
+        if (ph->data->philosophers[i].meals_count == ph->data->number_of_times_each_philosopher_must_eat)
+            {
+                set_death(ph);
+                break;
+            }
         print_msg(ph, "is sleeping");
         ft_usleep((ph->data->time_to_sleep));
         print_msg(ph, "is thinking");
     } 
    return (0);
 }
-
-
+void d()
+{
+    system("leaks -q a.out");
+}
 int main(int argc, char **argv)
 {
-    struct timeval start, end;
-    int t, f;
-    
-    gettimeofday(&start, NULL);
-    
-    sleep(2);
-    gettimeofday(&end, NULL);
-    //printf("|\t | : %ld\n", end.tv_sec);
-     philo_creat(argv);
-    // long seconds = end.tv_sec - start.tv_sec;
-    // long microseconds = end.tv_usec - start.tv_usec;
-    // long elapsed_microseconds = seconds * 1000000 + microseconds;
-
-    
-   // printf("%ld", ( ( ((end.tv_sec - start.tv_sec) * 1000000)  + (end.tv_usec - start.tv_usec))  / 1000));
     if (argc != 6)
         {
             printf("args!");
             return (0);
         }
+     philo_creat(argv);
+     
+    atexit(d);
     return (0);
 }
 
