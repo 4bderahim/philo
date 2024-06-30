@@ -3,13 +3,31 @@
 
 #include "philo.h"
 #include <sys/time.h>
-
-
-long int time_()
+long	get_time(void)
 {
-    struct timeval end;
-    gettimeofday(&end, NULL);
-    return (end.tv_sec * 1000 ) + (end.tv_usec / 1000);
+	struct timeval	time;
+	long			result;
+
+	gettimeofday(&time, NULL);
+	result = ((size_t)time.tv_sec * 1000) + ((size_t)time.tv_usec / 1000);
+	return (result);
+}
+void	ft_usleep(long sleep_time)
+{
+	long	start;
+
+	start = get_time();
+	while (start + (sleep_time * 1) > get_time())
+		usleep(100);
+}
+long	time_(void)
+{
+	struct timeval	time;
+	long			result;
+
+	gettimeofday(&time, NULL);
+	result = ((size_t)time.tv_sec * 1000) + ((size_t)time.tv_usec / 1000);
+	return (result);
 }
 long int x = 0;
 void *thread(void* arg);
@@ -24,7 +42,7 @@ void print_msg(t_philosopher *philo, char *msg)
     pthread_mutex_lock(&philo->data->m_printf);
     if (!philo->data->dinner_end)
     {
-        printf("%ld %d %s\n",time_() - philo->data->time_start , philo->philo_id, msg);
+        printf("%ld %d %s\n",get_time() - philo->data->time_start , philo->philo_id, msg);
     }
     pthread_mutex_unlock(&philo->data->m_printf);
 }
@@ -46,22 +64,22 @@ void check_checks(t_philosopher *philo)
         
         while (i < philo->data->number_of_philosophers)
         {
-            pthread_mutex_lock(&philo->data->m_eat);
-            if (philo->data->philosophers[i].last_time_ate > 0 &&( time_() - philo->data->philosophers[i].last_time_ate > philo->data->time_to_eat))
+            if (philo->data->philosophers[i].last_time_ate != 0 &&( (get_time() - philo->data->philosophers[i].last_time_ate) > philo->data->time_to_die))
             {
-              //  printf("time:%ld\t||time to pass :%d\n" , time_() - (philo->data->philosophers[i].last_time_ate) , philo->data->time_to_eat);
+            //  printf("time:%ld\t||time to pass :%d\n" , get_time() - (philo->data->philosophers[i].last_time_ate) , philo->data->time_to_die);
                  //pthread_mutex_lock(&philo->data->m_printf);
+                 
                  print_msg(&philo->data->philosophers[i], "died");
+                // philo->data->dinner_end = 1;
                 set_death(philo);
+                pthread_mutex_unlock(&philo->data->m_eat);
+                break;
                 //pthread_mutex_unlock(&philo->data->m_printf);
-                
             }
             i++;
-            pthread_mutex_unlock(&philo->data->m_eat);
-            //usleep(1000);
+            usleep(1000);
         }
     }
-
 }
 void set_philos(t_data *data, t_fork *fork)
 {
@@ -170,7 +188,6 @@ void philo_creat(char **args)
     while (i < data->number_of_philosophers)
     {
         pthread_join(data->philosophers[i].thread, NULL);
-        usleep(1);
         i++;
     }
 }
@@ -195,15 +212,17 @@ void eating(t_philosopher *philo)
     print_msg(philo, "has taken a fork");
     pthread_mutex_lock(&philo->forks[philo->right_fork].fork);
     print_msg(philo, "has taken a fork");
-    pthread_mutex_lock(&philo->data->m_eat);
+    //pthread_mutex_lock(&philo->data->m_eat);
     
-    philo->meals_count++;
+    
     print_msg(philo, "is eating");
-    usleep((philo->data->time_to_eat * 1000) - 1000);
     set_eattime(philo);
+    philo->meals_count++;
+    ft_usleep((philo->data->time_to_eat));
+    
     if (philo->meals_count == philo->data->number_of_times_each_philosopher_must_eat)
         set_done_eating(philo);
-   pthread_mutex_unlock(&philo->data->m_eat);
+   //pthread_mutex_unlock(&philo->data->m_eat);
     
     pthread_mutex_unlock(&philo->forks[philo->right_fork].fork);
     pthread_mutex_unlock(&philo->forks[philo->left_fork].fork);
@@ -217,13 +236,13 @@ void *thread(void* arg)
     if (ph->philo_id % 2 == 0)
     {
         //print_msg(ph, "is thinking");
-        usleep(10000);
+        usleep(1000);
     }
     while (!ph->data->dinner_end)
     {
         eating(ph);
         print_msg(ph, "is sleeping");
-        usleep((ph->data->time_to_sleep * 1000)- 1000);
+        ft_usleep((ph->data->time_to_sleep));
         print_msg(ph, "is thinking");
     } 
    return (0);
@@ -254,3 +273,5 @@ int main(int argc, char **argv)
         }
     return (0);
 }
+
+
