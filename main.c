@@ -64,20 +64,25 @@ void check_checks(t_philosopher *philo)
         
         while (i < philo->data->number_of_philosophers)
         {
+        // if ((philo->data->number_of_times_each_philosopher_must_eat != 0) && (philo->data->number_of_philosophers == philo->data->philosophers[i].meals_count))
+		// {
+		// 	set_death(philo);
+		// 	break ;
+		// }
             if (philo->data->philosophers[i].last_time_ate != 0 &&( (get_time() - philo->data->philosophers[i].last_time_ate) > philo->data->time_to_die))
             {
             //  printf("time:%ld\t||time to pass :%d\n" , get_time() - (philo->data->philosophers[i].last_time_ate) , philo->data->time_to_die);
                  //pthread_mutex_lock(&philo->data->m_printf);
                  
                  print_msg(&philo->data->philosophers[i], "died");
-                // philo->data->dinner_end = 1;
-                set_death(philo);
-                pthread_mutex_unlock(&philo->data->m_eat);
+                 // philo->data->dinner_end = 1;
+                 set_death(philo);
+                //pthread_mutex_unlock(&philo->data->m_eat);
                 break;
                 //pthread_mutex_unlock(&philo->data->m_printf);
             }
             i++;
-            usleep(1000);
+            //usleep(1000);
         }
     }
 }
@@ -241,6 +246,13 @@ void *thread(void* arg)
     while (!ph->data->dinner_end)
     {
         eating(ph);
+        // if (ph->data->philosophers[i].meals_count == ph->data->number_of_times_each_philosopher_must_eat)
+        //     {
+        //         //set_death(ph);
+        //         ph->data->dinner_end =1;
+        //         break;
+        //     }
+        
         print_msg(ph, "is sleeping");
         ft_usleep((ph->data->time_to_sleep));
         print_msg(ph, "is thinking");
