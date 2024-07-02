@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 
-
+void *thread(void* arg);
 typedef struct s_data  t_data;
 typedef struct s_fork
 {
@@ -21,7 +21,7 @@ typedef struct s_philosopher
     int meals_count;
     int     left_fork;
     int     right_fork;
-    pthread_mutex_t th_mutex;
+    
     t_fork  *forks;
     t_data *data;
     long int last_time_ate;
@@ -36,7 +36,9 @@ typedef struct s_data
     pthread_mutex_t m_sleep;
     pthread_mutex_t m_think;
     pthread_mutex_t m_eat;
+    pthread_mutex_t m_eat_counter;
     pthread_mutex_t m_printf;
+    pthread_mutex_t th_mutex;
     int number_of_philosophers;
     int time_to_die;
     int time_to_eat; //
