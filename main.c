@@ -177,34 +177,40 @@ void end_dinner(t_data *data)
     free(data->philosophers);
     free(data);
 }
-void set_data_args(t_data *data, char **args)
+void set_data_args(t_data *data, char **args, int argc)
 {
     data->time_to_die = atoi(args[2]);
     data->time_to_eat = atoi(args[3]);
     data->time_to_sleep = atoi(args[4]);
-    data->number_of_times_each_philosopher_must_eat = atoi(args[5]);
+    if (argc == 6)
+        data->number_of_times_each_philosopher_must_eat = atoi(args[5]);
+    else
+        data->number_of_times_each_philosopher_must_eat = 0;
 }
-void philo_creat(char **args)
+int philo_creat(char **args,int argc )
 {
     t_data *data;
     int i;
     i = 0;
     data = (t_data *) malloc(sizeof(t_data));
-    if (!data)
-       return ;
+     if (!data)
+        {
+            printf("[-] error in malloc\n");
+            return (0);
+        }
    //printf("\t\t\t||%d||\n\n\n\n\n", atoi(args[1]));
     data->number_of_philosophers = atoi(args[1]);
     data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
     if (!data->philosophers)
         {
             printf("[-] error in malloc\n");
-            exit(1);
+            return (0);
         }
     data->forks = (t_fork *) malloc(sizeof(t_fork) *data->number_of_philosophers);
     if (!data->forks)
         {
             printf("[-] error in malloc\n");
-            exit(1);
+            return (0);
         }
     i = 0;
     while (i < data->number_of_philosophers)
@@ -214,16 +220,16 @@ void philo_creat(char **args)
         i++;
     }
     set_philos(data, data->forks);
-    set_data_args(data,args);
+    set_data_args(data,args, argc);
     
     i = 0;
     i = 0;
-    while (i < data->number_of_philosophers)
-    {
-        pthread_mutex_init(&(data->forks[i].fork), NULL);
+    // while (i < data->number_of_philosophers)
+    // {
+    //     pthread_mutex_init(&(data->forks[i].fork), NULL);
         
-        i++;
-    }
+    //     i++;
+    // }
     pthread_mutex_init(&(data->th_mutex), NULL);
     pthread_mutex_init(&(data->m_eat), NULL);
     pthread_mutex_init(&(data->m_printf), NULL);
@@ -234,7 +240,12 @@ void philo_creat(char **args)
     while (i < data->number_of_philosophers)
     {
         //pthread_mutex_init(&data->forks[i].fork, NULL);
-        pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]);
+        if (pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]) != 0)
+            {
+                end_dinner(data);
+                return (0);
+            }
+
         i++;
     }
     check_checks(data->philosophers);
@@ -245,6 +256,7 @@ void philo_creat(char **args)
         i++;
     }
     end_dinner(data);
+    return (1);
 }
 void set_eattime(t_philosopher *philo)
 {
@@ -290,6 +302,7 @@ void *thread(void* arg)
     t_philosopher *ph;
     long int i;
     ph = (t_philosopher *) arg;
+    // printf("\t|%d\n", ph->philo_id);
     if (ph->philo_id % 2 == 0)
         usleep(1000);
     while (!check_(ph) && ph->meals_count != ph->data->number_of_times_each_philosopher_must_eat)
@@ -326,7 +339,9 @@ int main(int argc, char **argv)
             printf("args!");
             return (0);
         }
-     philo_creat(argv);
+    if (!philo_creat(argv, argc))
+        printf("[-] Error!\n");
+
     //atexit(d);
     return (0);
 }
