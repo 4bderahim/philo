@@ -21,7 +21,7 @@ typedef struct s_philosopher
     int meals_count;
     int     left_fork;
     int     right_fork;
-    
+    int philo_done_eating;
     t_fork  *forks;
     t_data *data;
     long int last_time_ate;
@@ -39,9 +39,11 @@ typedef struct s_data
     pthread_mutex_t m_eat_counter;
     pthread_mutex_t m_printf;
     pthread_mutex_t th_mutex;
+    pthread_mutex_t m_meals_count;
+    int all_meals;
     int number_of_philosophers;
     int time_to_die;
-    int time_to_eat; //
+    int time_to_eat;
     int time_to_sleep;
     int start_party;
     int end_party;
