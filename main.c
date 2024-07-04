@@ -1,8 +1,37 @@
 
-
-
 #include "philo.h"
 #include <sys/time.h>
+
+int	ph_atoi(char *s)
+{
+	int	res;
+    int i;
+
+    i = 0;
+	res = 0;
+	while (s[i] != 0)
+	{
+		if (!(s[i] >= '0' && s[i] <= '9'))
+            return (-1);
+		res = (res * 10) + (s[i] - 48);
+		i++;
+	}
+	return (res);
+}
+
+int check_args(char **argv, int argc)
+{
+    int i;
+    i = 1;
+
+    while (i < argc)
+    {
+        if (atoi(argv[i]) == -1)
+            return (0);
+        i++;
+    }
+    return (1);
+}
 long	get_time(void)
 {
 	struct timeval	time;
@@ -26,8 +55,12 @@ void	ft_usleep(long sleep_time)
 	long	start;
 
 	start = time_();
-	while (start + (sleep_time * 1) > time_())
-		usleep(100);
+	while (start + (sleep_time) > time_())
+		{
+            //check here for death to avoid delay in exiting!
+            //(time_() - philo->data->philosophers[i].last_time_ate) > philo->data->time_to_die
+            usleep(500);
+        }
 }
 
 
@@ -74,6 +107,11 @@ int check_full(t_data *data)
     while (i < data->number_of_philosophers)
     {
         pthread_mutex_lock(&data->m_eat);
+        if (data->number_of_times_each_philosopher_must_eat == 0) 
+            {
+                pthread_mutex_unlock(&data->m_eat);        
+                return 0;
+            }
         if (data->philosophers[i].meals_count != data->number_of_times_each_philosopher_must_eat)
             {
                 pthread_mutex_unlock(&data->m_eat);
@@ -96,24 +134,16 @@ void check_checks(t_philosopher *philo)
         long g;
         while (i < philo->data->number_of_philosophers)
         {
-        // if ((philo->data->number_of_times_each_philosopher_must_eat != 0) && (philo->data->number_of_philosophers == philo->data->philosophers[i].meals_count))
-		// {
-		// 	set_death(philo);
-		// 	break ;
-		// }
         if (check_full(philo->data))
                 {
                     set_death(philo);
                     break;
                 }
             pthread_mutex_lock(&philo->data->m_eat);
-          //  printf("\t>%ld{}%ld\n", time_() , philo->data->philosophers[i].last_time_ate);
-            
             if (philo->data->philosophers[i].last_time_ate &&  (time_() - philo->data->philosophers[i].last_time_ate) >= philo->data->time_to_die)
             {
                 pthread_mutex_unlock(&philo->data->m_eat);
                 print_msg(&philo->data->philosophers[i], "died");
-                 //philo->data->dinner_end = 1;
                 set_death(philo);
                  
                  break;
@@ -179,9 +209,9 @@ void end_dinner(t_data *data)
 }
 void set_data_args(t_data *data, char **args, int argc)
 {
-    data->time_to_die = atoi(args[2]);
-    data->time_to_eat = atoi(args[3]);
-    data->time_to_sleep = atoi(args[4]);
+    data->time_to_die = ph_atoi(args[2]);
+    data->time_to_eat = ph_atoi(args[3]);
+    data->time_to_sleep = ph_atoi(args[4]);
     if (argc == 6)
         data->number_of_times_each_philosopher_must_eat = atoi(args[5]);
     else
@@ -198,8 +228,7 @@ int philo_creat(char **args,int argc )
             printf("[-] error in malloc\n");
             return (0);
         }
-   //printf("\t\t\t||%d||\n\n\n\n\n", atoi(args[1]));
-    data->number_of_philosophers = atoi(args[1]);
+    data->number_of_philosophers = ph_atoi(args[1]);
     data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
     if (!data->philosophers)
         {
@@ -271,12 +300,7 @@ void set_meals_count(t_philosopher *philo)
     philo->meals_count++;
     pthread_mutex_unlock(&philo->data->m_eat);
 }
-// void set_done_eating(t_philosopher *philo)
-// {
-//     pthread_mutex_lock(&philo->data->th_mutex);
-    
-//     pthread_mutex_unlock(&philo->data->th_mutex);
-// }
+
 void set_all_meals_count(t_philosopher *philo)
 {
     pthread_mutex_lock(&(philo->data->m_meals_count));
@@ -297,6 +321,7 @@ void eating(t_philosopher *philo)
     pthread_mutex_unlock(&philo->forks[philo->left_fork].fork);
 }
 
+
 void *thread(void* arg)
 {
     t_philosopher *ph;
@@ -304,27 +329,13 @@ void *thread(void* arg)
     ph = (t_philosopher *) arg;
     // printf("\t|%d\n", ph->philo_id);
     if (ph->philo_id % 2 == 0)
-        usleep(1000);
-    while (!check_(ph) && ph->meals_count != ph->data->number_of_times_each_philosopher_must_eat)
+        usleep(1500);
+    while (!check_(ph))
     {
-        // pthread_mutex_lock(&(ph->data->m_meals_count));
-        // if (ph->data->all_meals == (ph->meals_count * ph->data->number_of_times_each_philosopher_must_eat))
-        //             {
-        //                 pthread_mutex_unlock(&(ph->data->m_meals_count));
-        //                 break;
-        //             }
-        // pthread_mutex_unlock(&(ph->data->m_meals_count));
-        if (ph->meals_count == ph->data->number_of_times_each_philosopher_must_eat)
-            {
-               // ph->data->all_meals += ph->meals_count;
-                break;
-            }
         eating(ph);
-       // printf("%d|%d\n", ph->meals_count , ph->data->number_of_times_each_philosopher_must_eat);        
         print_msg(ph, "is sleeping");
         ft_usleep((ph->data->time_to_sleep));
         print_msg(ph, "is thinking");
-        //usleep(100);
     } 
    return (0);
 }
@@ -332,11 +343,14 @@ void d()
 {
     system("leaks -q a.out");
 }
+
+
+
 int main(int argc, char **argv)
 {
-    if (argc != 6)
+    if (argc < 5 || check_args(argv, argc) == 0)
         {
-            printf("args!");
+            printf("Error : args!");
             return (0);
         }
     if (!philo_creat(argv, argc))
