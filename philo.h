@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 void *thread(void* arg);
 typedef struct s_data  t_data;
@@ -53,3 +54,16 @@ typedef struct s_data
     int i;
     t_fork  *forks;
 } t_data;
+int check_args(char **argv, int argc);
+int	ph_atoi(char *s);
+void	ft_usleep(long sleep_time);
+long	time_();
+int check_(t_philosopher *philo);
+void check_checks(t_philosopher *philo);
+void eating(t_philosopher *philo);
+void print_msg(t_philosopher *philo, char *msg);
+void set_death(t_philosopher *philo);
+void set_data_args(t_data *data, char **args, int argc);
+void set_philos(t_data *data, t_fork *fork);
+void set_forks_to_philos(t_data *data, int position);
+void mutex_calls(pthread_mutex_t *mutex, char order);
