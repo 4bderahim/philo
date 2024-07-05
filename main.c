@@ -19,58 +19,46 @@ void end_dinner(t_data *data)
     free(data->philosophers);
     free(data);
 }
-int philo_creat(char **args,int argc )
+
+
+int set_mutex(t_data *data)
 {
-    t_data *data;
     int i;
+    int x;
+    int error;
+
     i = 0;
-    data = (t_data *) malloc(sizeof(t_data));
-     if (!data)
-        {
-            printf("[-] error in malloc\n");
-            return (0);
-        }
-    data->number_of_philosophers = ph_atoi(args[1]);
-    data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
-    if (!data->philosophers)
-        {
-            printf("[-] error in malloc\n");
-            return (0);
-        }
-    data->forks = (t_fork *) malloc(sizeof(t_fork) *data->number_of_philosophers);
-    if (!data->forks)
-        {
-            printf("[-] error in malloc\n");
-            return (0);
-        }
-    i = 0;
+    error = 0;
     while (i < data->number_of_philosophers)
     {
-        mutex_calls(&data->forks[i].fork, 'i');
+        x = pthread_mutex_init(&data->forks[i].fork, NULL);
+        if (x)
+            return (0);
         data->forks[i].fork_id = i;
         i++;
     }
-    set_philos(data, data->forks);
-    set_data_args(data,args, argc);
-    
-    i = 0;
-    i = 0;
-    // while (i < data->number_of_philosophers)
-    // {
-    //     pthread_mutex_init(&(data->forks[i].fork), NULL);
+    x = pthread_mutex_init(&(data->th_mutex), NULL);
+    if (x)
+        error =1;
+    x = pthread_mutex_init(&(data->m_eat), NULL);
+    if (x)
+        error =1;
+    x = pthread_mutex_init(&(data->m_printf), NULL);
+    if (x)
+        error =1;
+    if (error)
+    {
         
-    //     i++;
-    // }
-    pthread_mutex_init(&(data->th_mutex), NULL);
-    pthread_mutex_init(&(data->m_eat), NULL);
-    pthread_mutex_init(&(data->m_printf), NULL);
-    //pthread_mutex_init(&(data->m_meals_count), NULL);
+    }
+    return (1);
+}
+int create_threads(t_data *data)
+{
+    int i;
 
     i = 0;
-    //data->time_start = time_();
     while (i < data->number_of_philosophers)
     {
-        //pthread_mutex_init(&data->forks[i].fork, NULL);
         if (pthread_create(&data->philosophers[i].thread, NULL, thread, &data->philosophers[i]) != 0)
             {
                 end_dinner(data);
@@ -79,13 +67,48 @@ int philo_creat(char **args,int argc )
 
         i++;
     }
-    check_checks(data->philosophers);
+    return (1);
+}
+int join_threads(t_data *data)
+{
+    int i;
+    int x;
+
     i = 0;
     while (i < data->number_of_philosophers)
     {
-        pthread_join(data->philosophers[i].thread, NULL);
+        x = pthread_join(data->philosophers[i].thread, NULL);
+        if (x)
+            return (0);
         i++;
     }
+    return (1);
+}
+int philo_creat(char **args,int argc )
+{
+    t_data *data;
+    int i;
+    i = 0;
+    data = (t_data *) malloc(sizeof(t_data));
+     if (!data)
+        return (0);
+    data->number_of_philosophers = ph_atoi(args[1]);
+    data->philosophers = (t_philosopher *) malloc(sizeof(t_philosopher)*data->number_of_philosophers);
+    if (!data->philosophers)
+        return (0);
+    data->forks = (t_fork *) malloc(sizeof(t_fork) *data->number_of_philosophers);
+    if (!data->forks)
+        return (0);
+    i = 0;
+    set_philos(data, data->forks);
+    set_data_args(data,args, argc);
+    if (!set_mutex(data))
+        return (0);
+    if (!create_threads(data))
+        return (0);
+    check_checks(data->philosophers);
+    if (!join_threads(data))
+        return (0);
     end_dinner(data);
     return (1);
 }
