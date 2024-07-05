@@ -8,7 +8,6 @@ all : $(PROG_NAME)
 $(PROG_NAME) : $(OFILES) 
 	$(CC) $(CFLAGS) $(OFILES) -o $(PROG_NAME)
 
-
 %.o: %.c push_swap.h
 	$(CC) $(CFLAGS) -c $< -o $@
 

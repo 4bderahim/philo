@@ -66,3 +66,6 @@ void check_checks(t_philosopher *philo)
         }
     }
 }
+
+
+

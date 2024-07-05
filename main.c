@@ -19,36 +19,32 @@ void end_dinner(t_data *data)
     free(data->philosophers);
     free(data);
 }
-
-
 int set_mutex(t_data *data)
 {
     int i;
-    int x;
     int error;
 
     i = 0;
     error = 0;
     while (i < data->number_of_philosophers)
     {
-        x = pthread_mutex_init(&data->forks[i].fork, NULL);
-        if (x)
+        if (pthread_mutex_init(&data->forks[i].fork, NULL))
             return (0);
         data->forks[i].fork_id = i;
         i++;
     }
-    x = pthread_mutex_init(&(data->th_mutex), NULL);
-    if (x)
+    if (pthread_mutex_init(&(data->th_mutex), NULL))
         error =1;
-    x = pthread_mutex_init(&(data->m_eat), NULL);
-    if (x)
+    if (pthread_mutex_init(&(data->m_eat), NULL))
         error =1;
-    x = pthread_mutex_init(&(data->m_printf), NULL);
-    if (x)
+    if (pthread_mutex_init(&(data->m_printf), NULL))
         error =1;
     if (error)
     {
-        
+        free(data->forks);
+        free(data->philosophers);
+        free(data);
+        return 0;
     }
     return (1);
 }
@@ -77,8 +73,7 @@ int join_threads(t_data *data)
     i = 0;
     while (i < data->number_of_philosophers)
     {
-        x = pthread_join(data->philosophers[i].thread, NULL);
-        if (x)
+        if (pthread_join(data->philosophers[i].thread, NULL))
             return (0);
         i++;
     }
