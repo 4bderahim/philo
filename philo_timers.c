@@ -18,6 +18,7 @@ void	ft_usleep(long sleep_time)
 	start = time_();
 	while (start + (sleep_time) > time_())
 	{
+		
 		// check here for death to avoid delay in exiting!
 		//(time_()
 		//while ( time_() - philo->data->philosophers[i].last_time_ate) > philo->data->time_to_die

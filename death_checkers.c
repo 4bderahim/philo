@@ -1,3 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   death_checkers.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ael-krid <ael-krid@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/06 18:51:06 by ael-krid          #+#    #+#             */
+/*   Updated: 2024/07/06 18:51:07 by ael-krid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
+
 #include "philo.h"
 
 int	check_(t_philosopher *philo)
@@ -39,9 +53,7 @@ int	check_full(t_data *data)
 void	check_checks(t_philosopher *philo)
 {
 	int		i;
-	long	g;
 
-	i = 0;
 	while (!check_(philo))
 	{
 		i = 0;

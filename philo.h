@@ -1,4 +1,8 @@
 
+#ifndef PHILO_H
+
+#define PHILO_H
+
 
 #include <pthread.h>
 #include <stdio.h>
@@ -27,31 +31,23 @@ typedef struct s_philosopher
 	t_data				*data;
 	long int			last_time_ate;
 	int					philo_dead;
-	// int dinner_end;
 	int					*index;
 }						t_philosopher;
 typedef struct s_data
 {
 	pthread_t			thread;
 	long int			time_start;
-	pthread_mutex_t		m_sleep;
-	pthread_mutex_t		m_think;
 	pthread_mutex_t		m_eat;
-	pthread_mutex_t		m_eat_counter;
 	pthread_mutex_t		m_printf;
 	pthread_mutex_t		th_mutex;
-	pthread_mutex_t		m_meals_count;
 	int					all_meals;
 	int					number_of_philosophers;
 	int					time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
-	int					start_party;
-	int					end_party;
 	int					dinner_end;
 	int					number_of_times_each_philosopher_must_eat;
 	t_philosopher		*philosophers;
-	int					i;
 	t_fork				*forks;
 }						t_data;
 int						check_args(char **argv, int argc);
@@ -70,3 +66,4 @@ void					end_dinner(t_data *data);
 int						set_mutex(t_data *data);
 int						create_threads(t_data *data);
 int						join_threads(t_data *data);
+#endif

@@ -1,3 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dinner_actions.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ael-krid <ael-krid@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/06 18:51:06 by ael-krid          #+#    #+#             */
+/*   Updated: 2024/07/06 18:51:07 by ael-krid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
+
 #include "philo.h"
 
 void	set_death(t_philosopher *philo)
@@ -11,7 +25,6 @@ void	set_eattime(t_philosopher *philo)
 {
 	pthread_mutex_lock(&philo->data->m_eat);
 	philo->last_time_ate = time_();
-	// philo->meals_count++;
 	pthread_mutex_unlock(&philo->data->m_eat);
 }
 
