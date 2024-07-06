@@ -61,7 +61,7 @@ void	eating(t_philosopher *philo)
 	print_msg(philo, "has taken a fork");
 	print_msg(philo, "is eating");
 	set_eattime(philo);
-	ft_usleep((philo->data->time_to_eat));
+	ft_usleep((philo->data->time_to_eat), philo);
 	set_meals_count(philo);
 	pthread_mutex_unlock(&philo->forks[philo->right_fork].fork);
 	pthread_mutex_unlock(&philo->forks[philo->left_fork].fork);

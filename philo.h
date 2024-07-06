@@ -52,7 +52,7 @@ typedef struct s_data
 }						t_data;
 int						check_args(char **argv, int argc);
 int						ph_atoi(char *s);
-void					ft_usleep(long sleep_time);
+void					ft_usleep(long sleep_time, t_philosopher *philo);
 long					time_(void);
 int						check_(t_philosopher *philo);
 void					check_checks(t_philosopher *philo);

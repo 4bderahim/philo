@@ -71,7 +71,7 @@ void *thread(void* arg)
         
         eating(ph);
         print_msg(ph, "is sleeping");
-        ft_usleep((ph->data->time_to_sleep));
+        ft_usleep((ph->data->time_to_sleep), ph);
         print_msg(ph, "is thinking");
     } 
    return (0);
