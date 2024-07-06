@@ -1,4 +1,3 @@
-
 #include "philo.h"
 
 void end_dinner(t_data *data)
@@ -9,7 +8,6 @@ void end_dinner(t_data *data)
     while (i < data->number_of_philosophers)
     {
         pthread_mutex_destroy(&data->philosophers[i].forks->fork);
-        
         pthread_detach(data->philosophers[i].thread);
         i++;
     }
@@ -49,18 +47,16 @@ int philo_creat(char **args,int argc )
     return (1);
 }
 
-
-
 void *thread(void* arg)
 {
     t_philosopher *ph;
     long int i;
     ph = (t_philosopher *) arg;
-    // printf("\t|%d\n", ph->philo_id);
     if (ph->philo_id % 2 == 0)
         usleep(1500);
     while (!check_(ph))
     {
+        
         eating(ph);
         print_msg(ph, "is sleeping");
         ft_usleep((ph->data->time_to_sleep));
@@ -70,7 +66,7 @@ void *thread(void* arg)
 }
 void d()
 {
-    system("leaks -q a.out");
+    system("leaks -q philo");
 }
 
 int main(int argc, char **argv)
@@ -82,9 +78,5 @@ int main(int argc, char **argv)
         }
     if (!philo_creat(argv, argc))
         printf("[-] Error!\n");
-
-    atexit(d);
     return (0);
 }
-
-

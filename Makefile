@@ -1,5 +1,5 @@
 CC = cc 
-CFLAGS = #-Wall -Wextra -Werror	
+CFLAGS =  #-Wall -Wextra -Werror	
 CFILES =  dinner_set.c dinner_actions.c death_checkers.c philo_timers.c checks.c main.c set_and_init.c
 OFILES = $(CFILES:.c=.o)
 
