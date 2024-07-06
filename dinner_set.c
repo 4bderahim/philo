@@ -32,17 +32,17 @@ void	set_philos(t_data *data, t_fork *fork)
 		i++;
 	}
 }
-void	mutex_calls(pthread_mutex_t *mutex, char order)
-{
-	if (order == 'i')
-		pthread_mutex_init(mutex, NULL);
-	else if (order == 'l')
-		pthread_mutex_lock(mutex);
-	else if (order == 'u')
-		pthread_mutex_unlock(mutex);
-	else if (order == 'd')
-		pthread_mutex_destroy(mutex);
-}
+// void	mutex_calls(pthread_mutex_t *mutex, char order)
+// {
+// 	if (order == 'i')
+// 		pthread_mutex_init(mutex, NULL);
+// 	else if (order == 'l')
+// 		pthread_mutex_lock(mutex);
+// 	else if (order == 'u')
+// 		pthread_mutex_unlock(mutex);
+// 	else if (order == 'd')
+// 		pthread_mutex_destroy(mutex);
+// }
 
 void	set_data_args(t_data *data, char **args, int argc)
 {

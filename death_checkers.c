@@ -25,7 +25,6 @@ int	check_full(t_data *data)
 			pthread_mutex_unlock(&data->m_eat);
 			return (0);
 		}
-        
 		if (data->philosophers[i].meals_count < data->number_of_times_each_philosopher_must_eat)
 		{
 			pthread_mutex_unlock(&data->m_eat);
