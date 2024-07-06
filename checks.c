@@ -1,3 +1,5 @@
+#include "philo.h"
+
 int	ph_atoi(char *s)
 {
 	int	res;
@@ -7,6 +9,12 @@ int	ph_atoi(char *s)
 	res = 0;
 	while (s[i] != 0)
 	{
+        if (s[i] == '+')
+        {
+            if (!(s[i+1] >= '0' && s[i+1] <= '9'))
+                return (-1);
+            i++;
+        }
 		if (!(s[i] >= '0' && s[i] <= '9'))
             return (-1);
 		res = (res * 10) + (s[i] - 48);

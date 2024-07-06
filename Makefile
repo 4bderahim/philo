@@ -8,13 +8,12 @@ all : $(PROG_NAME)
 $(PROG_NAME) : $(OFILES) 
 	$(CC) $(CFLAGS) $(OFILES) -o $(PROG_NAME)
 
-%.o: %.c push_swap.h
+%.o: %.c philo.h
 	$(CC) $(CFLAGS) -c $< -o $@
-
 clean: 
 	rm -f $(OFILES) $(OBFILES) 
 	
 fclean: clean 
 	 rm -f $(OFILES) $(PROG_NAME) 
 	 
-re: fclean all
+re: fclean all 
