@@ -46,7 +46,7 @@ int philo_creat(char **args,int argc )
     data->forks = (t_fork *) malloc(sizeof(t_fork) *data->number_of_philosophers);
     if (!data->forks)
         return (0);
-    set_philos(data, data->forks);
+    set_philos(data);
     set_data_args(data,args, argc);
     if (!set_mutex(data))
         return (0);
@@ -62,13 +62,11 @@ int philo_creat(char **args,int argc )
 void *thread(void* arg)
 {
     t_philosopher *ph;
-    long int i;
     ph = (t_philosopher *) arg;
     if (ph->philo_id % 2 == 0)
         usleep(1500);
     while (!check_(ph))
     {
-        
         eating(ph);
         print_msg(ph, "is sleeping");
         ft_usleep((ph->data->time_to_sleep), ph);
@@ -83,7 +81,12 @@ void d()
 
 int main(int argc, char **argv)
 {
-    if (argc < 5 || check_args(argv, argc) == 0)
+    if (argc < 5 || check_args(argv, argc) == 0 || ph_atoi(argv[1]) == 0)
+        {
+            printf("[-] Error!\n");
+            return (0);
+        }
+    if (argc == 6 && ph_atoi(argv[5]) == 0)
         {
             printf("[-] Error!\n");
             return (0);

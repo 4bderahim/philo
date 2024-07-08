@@ -44,7 +44,6 @@ int	set_mutex(t_data *data)
 int	create_threads(t_data *data)
 {
 	int	i;
-    //printf("\n\n\n\n\t\t\t\t\t\t@###s#######\n");
 	i = 0;
 	while (i < data->number_of_philosophers)
 	{
@@ -64,7 +63,6 @@ int	create_threads(t_data *data)
 int	join_threads(t_data *data)
 {
 	int i;
-	int x;
 
 	i = 0;
 	while (i < data->number_of_philosophers)

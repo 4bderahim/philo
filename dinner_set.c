@@ -20,7 +20,7 @@ void	set_forks_to_philos(t_data *data, int position)
 		% data->number_of_philosophers;
 }
 
-void	set_philos(t_data *data, t_fork *fork)
+void	set_philos(t_data *data)
 {
 	int	i;
 

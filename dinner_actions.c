@@ -39,10 +39,14 @@ void	print_msg(t_philosopher *philo, char *msg)
 {
 	pthread_mutex_lock(&philo->data->m_printf);
 	pthread_mutex_lock(&philo->data->m_eat);
+	//usleep(50);
 	if (!philo->data->dinner_end)
 	{
+		if (msg[0] == 'd')
+			philo->data->dinner_end = 1;
 		printf("%ld %d %s\n", time_() - philo->data->time_start,
 			philo->philo_id, msg);
+		
 	}
 	pthread_mutex_unlock(&philo->data->m_eat);
 	pthread_mutex_unlock(&philo->data->m_printf);
@@ -56,6 +60,7 @@ void	eating(t_philosopher *philo)
         {
 			print_msg(philo, "died");
 			set_death(philo);
+			return ;
         }
 	pthread_mutex_lock(&philo->forks[philo->right_fork].fork);
 	print_msg(philo, "has taken a fork");

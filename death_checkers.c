@@ -69,7 +69,7 @@ void	check_checks(t_philosopher *philo)
 			{
 				pthread_mutex_unlock(&philo->data->m_eat);
 				print_msg(&philo->data->philosophers[i], "died");
-				set_death(philo);
+				//set_death(philo);
 				break ;
 			}
 			pthread_mutex_unlock(&philo->data->m_eat);

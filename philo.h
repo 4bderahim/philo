@@ -60,7 +60,7 @@ void					eating(t_philosopher *philo);
 void					print_msg(t_philosopher *philo, char *msg);
 void					set_death(t_philosopher *philo);
 void					set_data_args(t_data *data, char **args, int argc);
-void					set_philos(t_data *data, t_fork *fork);
+void					set_philos(t_data *data);
 void					set_forks_to_philos(t_data *data, int position);
 void					end_dinner(t_data *data);
 int						set_mutex(t_data *data);
