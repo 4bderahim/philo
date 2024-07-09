@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
-
 #include "philo.h"
 
 int	ph_atoi(char *s)
@@ -39,9 +37,9 @@ int	ph_atoi(char *s)
 
 int	check_args(char **argv, int argc)
 {
-	int i;
-	i = 1;
+	int	i;
 
+	i = 1;
 	while (i < argc)
 	{
 		if (ph_atoi(argv[i]) == -1)

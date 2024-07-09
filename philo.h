@@ -1,17 +1,26 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ael-krid <ael-krid@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/06 18:51:06 by ael-krid          #+#    #+#             */
+/*   Updated: 2024/07/06 18:51:07 by ael-krid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #ifndef PHILO_H
-
-#define PHILO_H
-
-
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <unistd.h>
+# define PHILO_H
+# include <pthread.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/time.h>
+# include <unistd.h>
 
 void					*thread(void *arg);
+
 typedef struct s_data	t_data;
+
 typedef struct s_fork
 {
 	pthread_mutex_t		fork;
@@ -22,16 +31,12 @@ typedef struct s_philosopher
 	pthread_t			thread;
 
 	int					philo_id;
-	int					full;
 	int					meals_count;
 	int					left_fork;
 	int					right_fork;
-	int					philo_done_eating;
 	t_fork				*forks;
 	t_data				*data;
 	long int			last_time_ate;
-	int					philo_dead;
-	int					*index;
 }						t_philosopher;
 typedef struct s_data
 {
@@ -41,12 +46,12 @@ typedef struct s_data
 	pthread_mutex_t		m_printf;
 	pthread_mutex_t		th_mutex;
 	int					all_meals;
-	int					number_of_philosophers;
+	int					n_of_philos;
 	int					time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
 	int					dinner_end;
-	int					number_of_times_each_philosopher_must_eat;
+	int					n_must_eat;
 	t_philosopher		*philosophers;
 	t_fork				*forks;
 }						t_data;

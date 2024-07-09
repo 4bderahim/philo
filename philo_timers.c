@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_timers.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ael-krid <ael-krid@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/06 18:51:06 by ael-krid          #+#    #+#             */
+/*   Updated: 2024/07/06 18:51:07 by ael-krid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philo.h"
 
@@ -13,13 +24,13 @@ long	time_(void)
 
 void	ft_usleep(long sleep_time, t_philosopher *philo)
 {
-	long start;
+	long	start;
 
 	start = time_();
 	while (start + (sleep_time) > time_())
 	{
 		if (check_(philo))
-			break;
+			break ;
 		usleep(500);
 	}
 }

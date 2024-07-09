@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
-
 #include "philo.h"
 
 int	check_(t_philosopher *philo)
@@ -31,15 +29,15 @@ int	check_full(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < data->number_of_philosophers)
+	while (i < data->n_of_philos)
 	{
 		pthread_mutex_lock(&data->m_eat);
-		if (data->number_of_times_each_philosopher_must_eat == 0)
+		if (data->n_must_eat == 0)
 		{
 			pthread_mutex_unlock(&data->m_eat);
 			return (0);
 		}
-		if (data->philosophers[i].meals_count < data->number_of_times_each_philosopher_must_eat)
+		if (data->philosophers[i].meals_count < data->n_must_eat)
 		{
 			pthread_mutex_unlock(&data->m_eat);
 			return (0);
@@ -53,11 +51,12 @@ int	check_full(t_data *data)
 void	check_checks(t_philosopher *philo)
 {
 	int		i;
+	long	l_eat;
 
 	while (!check_(philo))
 	{
 		i = 0;
-		while (i < philo->data->number_of_philosophers)
+		while (i < philo->data->n_of_philos)
 		{
 			if (check_full(philo->data))
 			{
@@ -65,11 +64,11 @@ void	check_checks(t_philosopher *philo)
 				break ;
 			}
 			pthread_mutex_lock(&philo->data->m_eat);
-			if (philo->data->philosophers[i].last_time_ate && (time_() - philo->data->philosophers[i].last_time_ate) >= philo->data->time_to_die)
+			l_eat = philo->data->philosophers[i].last_time_ate;
+			if (l_eat && (time_() - l_eat) >= philo->data->time_to_die)
 			{
 				pthread_mutex_unlock(&philo->data->m_eat);
 				print_msg(&philo->data->philosophers[i], "died");
-				//set_death(philo);
 				break ;
 			}
 			pthread_mutex_unlock(&philo->data->m_eat);
