@@ -75,11 +75,6 @@ void	*thread(void *arg)
 	return (0);
 }
 
-void	d(void)
-{
-	system("leaks -q philo");
-}
-
 int	main(int argc, char **argv)
 {
 	if (argc < 5 || argc > 6 || check_args(argv, argc) == 0
@@ -95,6 +90,5 @@ int	main(int argc, char **argv)
 	}
 	if (!philo_creat(argv, argc))
 		printf("[-] Error!\n");
-	//atexit(d);
 	return (0);
 }
