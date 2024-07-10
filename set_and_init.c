@@ -19,7 +19,7 @@ int	set_mutex(t_data *data)
 	while (i < data->n_of_philos)
 	{
 		if (pthread_mutex_init(&data->forks[i].fork, NULL))
-			return (0);
+			return (free(data->forks), free(data->philosophers), free(data), 0);
 		data->forks[i].fork_id = i;
 		i++;
 	}

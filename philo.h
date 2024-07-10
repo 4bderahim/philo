@@ -9,6 +9,7 @@
 /*   Updated: 2024/07/06 18:51:07 by ael-krid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 # include <pthread.h>
@@ -40,7 +41,6 @@ typedef struct s_philosopher
 }						t_philosopher;
 typedef struct s_data
 {
-	pthread_t			thread;
 	long int			time_start;
 	pthread_mutex_t		m_eat;
 	pthread_mutex_t		m_printf;
@@ -66,7 +66,6 @@ void					print_msg(t_philosopher *philo, char *msg);
 void					set_death(t_philosopher *philo);
 void					set_data_args(t_data *data, char **args, int argc);
 void					set_philos(t_data *data);
-void					set_forks_to_philos(t_data *data, int position);
 void					end_dinner(t_data *data);
 int						set_mutex(t_data *data);
 int						create_threads(t_data *data);

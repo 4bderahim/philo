@@ -41,10 +41,10 @@ int	philo_creat(char **args, int argc)
 	data->philosophers = (t_philosopher *)malloc(sizeof(t_philosopher)
 			* data->n_of_philos);
 	if (!data->philosophers)
-		return (0);
+		return ((free(data), 0));
 	data->forks = (t_fork *)malloc(sizeof(t_fork) * data->n_of_philos);
 	if (!data->forks)
-		return (0);
+		return ((free(data->philosophers),free(data), 0));
 	set_philos(data);
 	set_data_args(data, args, argc);
 	if (!set_mutex(data))
@@ -64,7 +64,10 @@ void	*thread(void *arg)
 
 	ph = (t_philosopher *)arg;
 	if (ph->philo_id % 2 == 0)
-		usleep(1500);
+		{
+			//print_msg(ph, "is thinking");
+			usleep(1500);
+		}
 	while (!check_(ph))
 	{
 		eating(ph);
@@ -74,7 +77,10 @@ void	*thread(void *arg)
 	}
 	return (0);
 }
-
+void d()
+{
+	system("leaks -q philo");
+}
 int	main(int argc, char **argv)
 {
 	if (argc < 5 || argc > 6 || check_args(argv, argc) == 0
@@ -90,5 +96,6 @@ int	main(int argc, char **argv)
 	}
 	if (!philo_creat(argv, argc))
 		printf("[-] Error!\n");
+	//atexit(d);
 	return (0);
 }

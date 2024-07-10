@@ -12,11 +12,6 @@
 
 #include "philo.h"
 
-void	set_forks_to_philos(t_data *data, int position)
-{
-	data->philosophers[position].right_fork = position;
-	data->philosophers[position].left_fork = (position + 1) % data->n_of_philos;
-}
 
 void	set_philos(t_data *data)
 {
@@ -31,7 +26,10 @@ void	set_philos(t_data *data)
 		data->dinner_end = 0;
 		data->philosophers[i].last_time_ate = 0;
 		data->time_start = time_();
-		data->philosophers[i].left_fork = (i + 1);// % data->n_of_philos;
+		if (i + 1 == data->n_of_philos)
+			data->philosophers[i].left_fork = 0;
+		else
+			data->philosophers[i].left_fork = i+1;
 		if (data->n_of_philos == 1)
 			data->philosophers[i].left_fork = 1;
 		data->philosophers[i].forks = data->forks;
@@ -40,6 +38,29 @@ void	set_philos(t_data *data)
 		i++;
 	}
 }
+
+// void	set_philos(t_data *data)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	while (i < data->n_of_philos)
+// 	{
+// 		data->time_start = time_();
+// 		data->philosophers[i].philo_id = i + 1;
+// 		data->philosophers[i].meals_count = 0;
+// 		data->philosophers[i].right_fork = i;
+// 		data->philosophers[i].last_time_ate = 0;
+// 		data->philosophers[i].left_fork = (i + 1) % data->n_of_philos;
+// 		if (data->n_of_philos == 1)
+// 			data->philosophers[i].left_fork = 1;
+// 		data->philosophers[i].forks = data->forks;
+// 		data->philosophers[i].data = data;
+// 		i++;
+// 	}
+// 	data->dinner_end = 0;
+// 	data->all_meals = 0;
+// }
 
 void	set_data_args(t_data *data, char **args, int argc)
 {
