@@ -35,7 +35,6 @@ void	set_meals_count(t_philosopher *philo)
 
 void	print_msg(t_philosopher *philo, char *msg)
 {
-	pthread_mutex_lock(&philo->data->m_printf);
 	pthread_mutex_lock(&philo->data->m_eat);
 	if (!philo->data->dinner_end)
 	{
@@ -45,19 +44,12 @@ void	print_msg(t_philosopher *philo, char *msg)
 			philo->philo_id, msg);
 	}
 	pthread_mutex_unlock(&philo->data->m_eat);
-	pthread_mutex_unlock(&philo->data->m_printf);
 }
 
 void	eating(t_philosopher *philo)
 {
 	pthread_mutex_lock(&philo->forks[philo->left_fork].fork);
 	print_msg(philo, "has taken a fork");
-	if (philo->data->n_of_philos == 1)
-	{
-		print_msg(philo, "died");
-		set_death(philo);
-		return ;
-	}
 	pthread_mutex_lock(&philo->forks[philo->right_fork].fork);
 	print_msg(philo, "has taken a fork");
 	print_msg(philo, "is eating");

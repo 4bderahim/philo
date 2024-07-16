@@ -48,6 +48,16 @@ int	check_full(t_data *data)
 	return (1);
 }
 
+int	check_if_full(t_philosopher *philo)
+{
+	if (check_full(philo->data))
+	{
+		set_death(philo);
+		return (1);
+	}
+	return (0);
+}
+
 void	check_checks(t_philosopher *philo)
 {
 	int		i;
@@ -58,17 +68,16 @@ void	check_checks(t_philosopher *philo)
 		i = 0;
 		while (i < philo->data->n_of_philos)
 		{
-			if (check_full(philo->data))
-			{
-				set_death(philo);
+			if (check_if_full(philo))
 				break ;
-			}
 			pthread_mutex_lock(&philo->data->m_eat);
 			l_eat = philo->data->philosophers[i].last_time_ate;
-			if (l_eat && (time_() - l_eat) >= philo->data->time_to_die)
+			if ((time_() - l_eat) >= philo->data->time_to_die)
 			{
 				pthread_mutex_unlock(&philo->data->m_eat);
 				print_msg(&philo->data->philosophers[i], "died");
+				l_eat = philo->right_fork;
+				pthread_mutex_unlock(&philo->data->forks[l_eat].fork);
 				break ;
 			}
 			pthread_mutex_unlock(&philo->data->m_eat);

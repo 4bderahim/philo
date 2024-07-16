@@ -20,15 +20,12 @@ int	set_mutex(t_data *data)
 	{
 		if (pthread_mutex_init(&data->forks[i].fork, NULL))
 			return (free(data->forks), free(data->philosophers), free(data), 0);
-		data->forks[i].fork_id = i;
 		i++;
 	}
 	i = 0;
 	if (pthread_mutex_init(&(data->th_mutex), NULL))
 		i = 1;
 	if (pthread_mutex_init(&(data->m_eat), NULL))
-		i = 1;
-	if (pthread_mutex_init(&(data->m_printf), NULL))
 		i = 1;
 	if (i == 1)
 	{

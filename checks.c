@@ -38,11 +38,13 @@ int	ph_atoi(char *s)
 int	check_args(char **argv, int argc)
 {
 	int	i;
+	int	t;
 
 	i = 1;
 	while (i < argc)
 	{
-		if (ph_atoi(argv[i]) == -1)
+		t = ph_atoi(argv[i]);
+		if (t == -1 || t == 0)
 			return (0);
 		i++;
 	}

@@ -25,7 +25,6 @@ typedef struct s_data	t_data;
 typedef struct s_fork
 {
 	pthread_mutex_t		fork;
-	int					fork_id;
 }						t_fork;
 typedef struct s_philosopher
 {
@@ -43,7 +42,6 @@ typedef struct s_data
 {
 	long int			time_start;
 	pthread_mutex_t		m_eat;
-	pthread_mutex_t		m_printf;
 	pthread_mutex_t		th_mutex;
 	int					all_meals;
 	int					n_of_philos;
