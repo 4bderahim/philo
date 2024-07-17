@@ -19,7 +19,8 @@ void	end_dinner(t_data *data)
 	i = 0;
 	while (i < data->n_of_philos)
 	{
-		pthread_mutex_destroy(&data->philosophers[i].forks->fork);
+		if (pthread_mutex_destroy(&data->forks[i].fork))
+			printf("%d\n", i);
 		i++;
 	}
 	pthread_mutex_destroy(&data->th_mutex);
