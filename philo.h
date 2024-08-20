@@ -42,7 +42,6 @@ typedef struct s_data
 {
 	long int			time_start;
 	pthread_mutex_t		m_eat;
-	pthread_mutex_t		th_mutex;
 	int					all_meals;
 	int					n_of_philos;
 	int					time_to_die;

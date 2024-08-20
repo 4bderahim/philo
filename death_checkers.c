@@ -83,5 +83,6 @@ void	check_checks(t_philosopher *philo)
 			pthread_mutex_unlock(&philo->data->m_eat);
 			i++;
 		}
+		usleep(100);
 	}
 }

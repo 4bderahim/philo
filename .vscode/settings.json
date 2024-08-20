@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "unistd.h": "c",
+        "signal.h": "c",
+        "time.h": "c",
+        "philo_bonus.h": "c"
+    }
+}

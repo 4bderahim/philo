@@ -23,7 +23,6 @@ void	end_dinner(t_data *data)
 			printf("%d\n", i);
 		i++;
 	}
-	pthread_mutex_destroy(&data->th_mutex);
 	free(data->forks);
 	free(data->philosophers);
 	free(data);

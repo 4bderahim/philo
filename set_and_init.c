@@ -23,8 +23,6 @@ int	set_mutex(t_data *data)
 		i++;
 	}
 	i = 0;
-	if (pthread_mutex_init(&(data->th_mutex), NULL))
-		i = 1;
 	if (pthread_mutex_init(&(data->m_eat), NULL))
 		i = 1;
 	if (i == 1)
